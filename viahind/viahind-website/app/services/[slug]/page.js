@@ -1,4 +1,3 @@
-import { use } from 'react';
 import ServiceDetailClient from './ServiceDetailClient';
 
 export async function generateStaticParams() {
@@ -13,8 +12,8 @@ export async function generateStaticParams() {
   ];
 }
 
-export default function ServiceDetailPage({ params }) {
-  const resolvedParams = use(params);
+export default async function ServiceDetailPage({ params }) {
+  const resolvedParams = await params;
 
   const serviceData = {
     'web-application': {
