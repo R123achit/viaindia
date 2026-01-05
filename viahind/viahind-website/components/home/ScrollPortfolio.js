@@ -8,6 +8,17 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+// Service-specific gradient configurations
+const serviceGradients = {
+  'Web Applications': 'from-[#0066FF] via-[#0052CC] to-[#003D99]',
+  'Web Designing': 'from-[#2EAE4D] via-[#259A3F] to-[#1C7A31]',
+  'E-Commerce Website': 'from-[#00B8D4] via-[#0097A7] to-[#00838F]',
+  'Mobile App Development': 'from-[#6B4FBB] via-[#5A3FA0] to-[#4A3285]',
+  'Desktop Applications': 'from-[#E94E3D] via-[#D43F2F] to-[#B83426]',
+  'Search Engine Optimization': 'from-[#FF7A3D] via-[#F06A2E] to-[#D95A20]',
+  'Social Media Marketing': 'from-[#FF7A3D] via-[#F06A2E] to-[#D95A20]'
+};
+
 export default function ScrollPortfolio() {
   const containerRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -29,15 +40,18 @@ export default function ScrollPortfolio() {
 
     const totalSections = portfolioServices.length;
 
-    // Small delay to ensure DOM is ready
     const timer = setTimeout(() => {
       try {
-        // Create scroll trigger for the entire section
+        const header = document.querySelector('.sticky');
+        const headerHeight = header ? header.offsetHeight : 0;
+        
         const scrollTrigger = ScrollTrigger.create({
           trigger: container,
-          start: 'top top',
+          start: `top ${headerHeight}px`,
           end: `+=${totalSections * 100}%`,
           pin: true,
+          pinSpacing: true,
+          anticipatePin: 1,
           scrub: animationConfig.scrollSpeed,
           snap: {
             snapTo: 1 / (totalSections - 1),
@@ -51,7 +65,8 @@ export default function ScrollPortfolio() {
               totalSections - 1
             );
             setActiveIndex(newIndex);
-          }
+          },
+          invalidateOnRefresh: true
         });
 
         return () => {
@@ -79,93 +94,124 @@ export default function ScrollPortfolio() {
 
   const handleServiceClick = (index) => {
     setActiveIndex(index);
-    // Smooth transition even without scroll
     if (containerRef.current) {
       containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
   const currentService = portfolioServices[activeIndex];
+  const currentGradient = serviceGradients[currentService.title] || 'from-blue-600 to-blue-800';
 
   return (
     <section
       ref={containerRef}
-      className="relative w-full h-screen overflow-hidden bg-gray-50"
+      className="relative w-full min-h-screen overflow-hidden"
     >
-      {/* Main Content Grid */}
-      <div className="relative z-10 h-full grid grid-cols-1 lg:grid-cols-12 gap-0">
+      {/* 3-Column Grid Structure */}
+      <div className="relative h-screen grid grid-cols-1 lg:grid-cols-10 gap-0">
         
-        {/* Left Sidebar - Service Navigation with Gradient Background */}
-        <div className="lg:col-span-3 relative">
-          {/* Animated Background for Left Panel Only */}
+        {/* COLUMN 1: LEFT SIDEBAR - Service Navigation Menu (30% width) */}
+        <div className="lg:col-span-3 relative overflow-hidden">
+          {/* Dynamic Gradient Background - Changes based on active service */}
           <div
-            className={`absolute inset-0 bg-gradient-to-br ${currentService.color} transition-all ease-in-out`}
-            style={{ transitionDuration: `${animationConfig.transitionDuration}ms` }}
+            className={`absolute inset-0 bg-gradient-to-br ${currentGradient} transition-all duration-700 ease-in-out`}
           />
           
-          {/* Left Panel Content */}
-          <div className="relative z-10 h-full flex flex-col justify-center space-y-4 lg:space-y-6 px-6 lg:px-8 py-8 lg:py-0">
-            <h2 className="text-white text-xl lg:text-2xl xl:text-3xl font-bold mb-2 lg:mb-4">
-              Our Strategic IT Solutions Deliver -
-            </h2>
+          {/* Sidebar Content */}
+          <div className="relative z-10 h-full flex flex-col pt-[30px] px-[30px] pb-8">
+            {/* Header */}
+            <div className="mb-12">
+              <h2 className="text-white text-[32px] font-bold leading-tight">
+                Our Strategic IT solutions Deliver -
+              </h2>
+            </div>
             
-            <nav className="space-y-2 lg:space-y-3">
+            {/* Navigation Menu Items */}
+            <nav className="flex flex-col gap-[60px]">
               {portfolioServices.map((service, index) => (
                 <button
                   key={service.id}
                   onClick={() => handleServiceClick(index)}
-                  className={`block text-left text-white text-xs lg:text-sm xl:text-base font-medium transition-all duration-300 pb-1 lg:pb-2 ${
-                    activeIndex === index
-                      ? 'border-b-2 border-white opacity-100 scale-105'
-                      : 'opacity-70 hover:opacity-100'
-                  }`}
+                  className="group relative block w-full text-left transition-all duration-300"
                 >
-                  {service.title.toUpperCase()}
+                  {/* Service Title */}
+                  <div className="relative">
+                    <span className={`text-white text-[18px] font-medium transition-all duration-300 ${
+                      activeIndex === index 
+                        ? 'opacity-100' 
+                        : 'opacity-70 group-hover:opacity-85 group-hover:brightness-110'
+                    }`}>
+                      {service.title}
+                    </span>
+                    
+                    {/* Active State: Underline - 3px solid white, 50px width */}
+                    <div 
+                      className={`absolute left-0 h-[3px] bg-white transition-all duration-300 ${
+                        activeIndex === index ? 'w-[50px] opacity-100 mt-2' : 'w-0 opacity-0'
+                      }`}
+                      style={{ top: '100%' }}
+                    />
+                  </div>
                 </button>
               ))}
             </nav>
           </div>
         </div>
 
-        {/* Center - Device Mockups (White/Gray Background) */}
-        <div className="lg:col-span-5 flex items-center justify-center relative min-h-[300px] lg:min-h-0 bg-gray-100 px-4 lg:px-8">
+        {/* COLUMN 2: CENTER - Device Mockups Display (40% width) */}
+        <div className="lg:col-span-4 flex items-center justify-center relative bg-white">
           <DeviceMockups screens={currentService.deviceScreens} />
         </div>
 
-        {/* Right Sidebar - Service Details (White Background) */}
-        <div className="lg:col-span-4 flex flex-col justify-center space-y-4 lg:space-y-6 bg-white px-6 lg:px-8 py-8 lg:py-0 text-gray-900">
-          <div className="space-y-3 lg:space-y-4">
-            <h3 className="text-2xl lg:text-3xl xl:text-4xl font-bold text-gray-900">
+        {/* COLUMN 3: RIGHT SIDEBAR - Service Details (30% width) */}
+        <div className="lg:col-span-3 flex flex-col justify-center space-y-8 bg-white px-10 py-8 border-l border-gray-200">
+          <div className="space-y-5">
+            <div className="inline-block">
+              <span className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-gradient-to-r ${currentGradient} text-white shadow-lg`}>
+                Featured Service
+              </span>
+            </div>
+            <h3 className="text-4xl font-black text-gray-900 leading-tight">
               {currentService.title}
             </h3>
-            <p className="text-sm lg:text-base xl:text-lg text-gray-700">
+            <p className="text-lg text-gray-600 leading-relaxed">
               {currentService.description}
             </p>
           </div>
 
-          <ul className="space-y-2 lg:space-y-3">
-            {currentService.features.map((feature, index) => (
-              <li key={index} className="flex items-start space-x-2 lg:space-x-3">
-                <span className="text-blue-600 text-lg lg:text-xl">■</span>
-                <span className="text-xs lg:text-sm xl:text-base text-gray-800">{feature}</span>
-              </li>
-            ))}
-          </ul>
+          <div className="space-y-4">
+            <h4 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Key Features</h4>
+            <ul className="space-y-4">
+              {currentService.features.map((feature, index) => (
+                <li key={index} className="flex items-start space-x-4 group">
+                  <div className={`flex-shrink-0 w-6 h-6 rounded-lg bg-gradient-to-br ${currentGradient} flex items-center justify-center mt-0.5 shadow-md group-hover:scale-110 transition-transform duration-300`}>
+                    <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <span className="text-base text-gray-800 font-medium leading-relaxed">{feature}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-          <div className="space-y-3 lg:space-y-4">
-            <h4 className="text-lg lg:text-xl font-semibold text-gray-900">Clients</h4>
-            <div className="flex flex-wrap gap-2 lg:gap-4">
+          <div className="space-y-5 pt-4 border-t border-gray-200">
+            <h4 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Trusted By</h4>
+            <div className="flex flex-wrap gap-3">
               {currentService.clients.slice(0, layoutConfig.maxClientsVisible).map((client, index) => (
                 <div
                   key={index}
-                  className="bg-gray-100 border border-gray-200 px-3 lg:px-4 py-1.5 lg:py-2 rounded-lg text-xs lg:text-sm font-medium text-gray-700"
+                  className={`bg-gradient-to-br ${currentGradient} text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300`}
                 >
                   {client}
                 </div>
               ))}
             </div>
-            <button className="text-xs lg:text-sm text-blue-600 underline hover:no-underline transition-all">
-              View All →
+            <button className="inline-flex items-center gap-2 text-base font-bold text-blue-600 hover:text-blue-700 transition-colors group">
+              View All Clients
+              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
             </button>
           </div>
         </div>
@@ -175,21 +221,28 @@ export default function ScrollPortfolio() {
       {layoutConfig.showSkipButton && (
         <button
           onClick={handleSkip}
-          className="absolute top-4 lg:top-8 right-4 lg:right-8 bg-gray-800 text-white px-4 lg:px-6 py-1.5 lg:py-2 rounded-full text-sm lg:text-base font-medium hover:bg-gray-700 transition-all duration-300 z-20"
+          className="absolute top-10 right-10 bg-white/95 backdrop-blur-sm text-gray-900 px-8 py-3 rounded-full text-base font-bold hover:bg-white hover:shadow-xl transition-all duration-300 z-[80] border border-gray-200 hover:scale-105 flex items-center gap-2"
         >
-          SKIP
+          <span>SKIP</span>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
         </button>
       )}
 
       {/* Progress Indicator */}
       {layoutConfig.showProgressIndicator && (
-        <div className="absolute bottom-4 lg:bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
+        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex items-center gap-3 z-[80] bg-white/90 backdrop-blur-md px-6 py-3 rounded-full shadow-lg border border-gray-200">
           {portfolioServices.map((_, index) => (
-            <div
+            <button
               key={index}
-              className={`h-1.5 lg:h-2 rounded-full transition-all duration-300 ${
-                activeIndex === index ? 'w-6 lg:w-8 bg-blue-600' : 'w-1.5 lg:w-2 bg-gray-400'
+              onClick={() => handleServiceClick(index)}
+              className={`transition-all duration-300 rounded-full ${
+                activeIndex === index 
+                  ? 'w-12 h-3 bg-gradient-to-r from-blue-600 to-blue-500 shadow-md' 
+                  : 'w-3 h-3 bg-gray-300 hover:bg-gray-400 hover:scale-110'
               }`}
+              aria-label={`Go to ${portfolioServices[index].title}`}
             />
           ))}
         </div>
