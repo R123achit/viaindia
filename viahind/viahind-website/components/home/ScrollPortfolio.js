@@ -29,32 +29,43 @@ export default function ScrollPortfolio() {
 
     const totalSections = portfolioServices.length;
 
-    // Create scroll trigger for the entire section
-    const scrollTrigger = ScrollTrigger.create({
-      trigger: container,
-      start: 'top top',
-      end: `+=${totalSections * 100}%`,
-      pin: true,
-      scrub: animationConfig.scrollSpeed,
-      snap: {
-        snapTo: 1 / (totalSections - 1),
-        duration: animationConfig.snapDuration,
-        ease: animationConfig.snapEase
-      },
-      onUpdate: (self) => {
-        const progress = self.progress;
-        const newIndex = Math.min(
-          Math.floor(progress * totalSections),
-          totalSections - 1
-        );
-        setActiveIndex(newIndex);
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      try {
+        // Create scroll trigger for the entire section
+        const scrollTrigger = ScrollTrigger.create({
+          trigger: container,
+          start: 'top top',
+          end: `+=${totalSections * 100}%`,
+          pin: true,
+          scrub: animationConfig.scrollSpeed,
+          snap: {
+            snapTo: 1 / (totalSections - 1),
+            duration: animationConfig.snapDuration,
+            ease: animationConfig.snapEase
+          },
+          onUpdate: (self) => {
+            const progress = self.progress;
+            const newIndex = Math.min(
+              Math.floor(progress * totalSections),
+              totalSections - 1
+            );
+            setActiveIndex(newIndex);
+          }
+        });
+
+        return () => {
+          if (scrollTrigger) {
+            scrollTrigger.kill();
+          }
+        };
+      } catch (error) {
+        console.error('ScrollTrigger error:', error);
       }
-    });
+    }, 100);
 
     return () => {
-      if (scrollTrigger) {
-        scrollTrigger.kill();
-      }
+      clearTimeout(timer);
     };
   }, [isSkipped, isMounted]);
 
@@ -67,8 +78,10 @@ export default function ScrollPortfolio() {
   };
 
   const handleServiceClick = (index) => {
-    if (layoutConfig.enableClickNavigation) {
-      setActiveIndex(index);
+    setActiveIndex(index);
+    // Smooth transition even without scroll
+    if (containerRef.current) {
+      containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
