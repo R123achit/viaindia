@@ -18,7 +18,7 @@ export default function RootLayout({ children }) {
       </head>
       <body suppressHydrationWarning>
         <TopBar />
-        <main className="pb-20">{children}</main>
+        <main className="pb-24 lg:pb-20">{children}</main>
         <Footer />
         <Navigation />
       </body>

@@ -11,7 +11,7 @@ export const portfolioServices = [
       'Exceptional Interface & Experience',
       'Static, Dynamic & E-commerce Apps'
     ],
-    color: 'from-blue-600 to-blue-500',
+    color: 'from-[#0066FF] to-[#0047B3]',
     clients: ['YOLO', 'DG Connect', 'Alhadaf', 'Shital Photo', 'Foodie'],
     deviceScreens: {
       laptop: '/api/placeholder/800/500',
@@ -28,7 +28,7 @@ export const portfolioServices = [
       'Responsive Layouts',
       'Brand Identity Integration'
     ],
-    color: 'from-teal-600 to-teal-500',
+    color: 'from-[#2EAE4D] to-[#1E7A33]',
     clients: ['Creative Co', 'Design Hub', 'Brand Studio', 'Visual Arts', 'Pixel Perfect'],
     deviceScreens: {
       laptop: '/api/placeholder/800/500',
@@ -45,7 +45,7 @@ export const portfolioServices = [
       'Inventory Management',
       'Mobile-First Shopping Experience'
     ],
-    color: 'from-cyan-600 to-cyan-500',
+    color: 'from-[#00B8D4] to-[#008BA3]',
     clients: ['Shop Plus', 'Market Pro', 'E-Store', 'Retail Hub', 'Commerce King'],
     deviceScreens: {
       laptop: '/api/placeholder/800/500',
@@ -62,7 +62,7 @@ export const portfolioServices = [
       'Seamless Performance',
       'Intuitive User Interface'
     ],
-    color: 'from-purple-600 to-purple-500',
+    color: 'from-[#6B4FBB] to-[#4A3580]',
     clients: ['App Innovate', 'Mobile First', 'Tech Apps', 'Smart Solutions', 'App Masters'],
     deviceScreens: {
       laptop: '/api/placeholder/800/500',
@@ -79,7 +79,7 @@ export const portfolioServices = [
       'High Performance',
       'Enterprise Security'
     ],
-    color: 'from-indigo-600 to-indigo-500',
+    color: 'from-[#E94E3D] to-[#B33A2C]',
     clients: ['Enterprise Tech', 'Desktop Pro', 'Software Inc', 'Business Apps', 'Pro Solutions'],
     deviceScreens: {
       laptop: '/api/placeholder/800/500',
@@ -96,7 +96,7 @@ export const portfolioServices = [
       'Technical SEO Optimization',
       'Content & Link Building'
     ],
-    color: 'from-green-600 to-green-500',
+    color: 'from-[#FF7A3D] to-[#CC5E2E]',
     clients: ['SEO Masters', 'Rank High', 'Search Pro', 'Digital Boost', 'Web Visibility'],
     deviceScreens: {
       laptop: '/api/placeholder/800/500',
@@ -113,7 +113,7 @@ export const portfolioServices = [
       'Content Strategy & Creation',
       'Analytics & Reporting'
     ],
-    color: 'from-pink-600 to-pink-500',
+    color: 'from-[#FF7A3D] to-[#CC5E2E]',
     clients: ['Social Buzz', 'Media Masters', 'Viral Marketing', 'Engage Pro', 'Social Growth'],
     deviceScreens: {
       laptop: '/api/placeholder/800/500',
