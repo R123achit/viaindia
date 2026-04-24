@@ -1,4 +1,3 @@
-'use client';
 import HeroSection from '@/components/home/HeroSection';
 import TrustBadges from '@/components/home/TrustBadges';
 import ClientCarousel from '@/components/home/ClientCarousel';

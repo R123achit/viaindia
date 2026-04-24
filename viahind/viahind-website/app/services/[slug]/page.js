@@ -2,13 +2,41 @@ import ServiceDetailClient from './ServiceDetailClient';
 
 export async function generateStaticParams() {
   return [
+    // Web Development
     { slug: 'web-application' },
     { slug: 'web-designing' },
     { slug: 'ecommerce' },
-    { slug: 'mobile' },
-    { slug: 'windows' },
+    // Mobile Application
+    { slug: 'ios' },
+    { slug: 'android' },
+    { slug: 'flutter' },
+    { slug: 'react-native' },
+    { slug: 'pwa' },
+    // Desktop App
+    { slug: 'windows-forms' },
+    { slug: 'wpf' },
+    // Enterprise Solution
     { slug: 'saas' },
-    { slug: 'seo' }
+    { slug: 'crm' },
+    { slug: 'erp' },
+    { slug: 'hrms' },
+    { slug: 'inventory' },
+    { slug: 'payroll' },
+    // Enterprise Integration
+    { slug: 'sap' },
+    { slug: 'microsoft' },
+    { slug: 'zoho' },
+    { slug: 'whatsapp' },
+    { slug: 'hardware' },
+    // Digital Marketing
+    { slug: 'sem' },
+    { slug: 'seo' },
+    { slug: 'smm' },
+    { slug: 'smo' },
+    // ERP Implementation
+    { slug: 'sap-impl' },
+    { slug: 'microsoft-impl' },
+    { slug: 'zoho-impl' }
   ];
 }
 
@@ -16,170 +44,179 @@ export default async function ServiceDetailPage({ params }) {
   const resolvedParams = await params;
 
   const serviceData = {
+    // Web Development Services
     'web-application': {
-      title: 'Web Application Development',
-      description: 'Build powerful, scalable web applications tailored to your business needs.',
-      overview: 'We specialize in creating custom web applications using cutting-edge technologies. Our solutions are designed for performance, scalability, and user experience. From enterprise applications to customer-facing portals, we deliver robust solutions that drive business growth.',
-      expertise: ['React & Next.js', 'Node.js & Express', 'MongoDB & PostgreSQL', 'AWS & Cloud Services', 'RESTful APIs', 'Microservices Architecture'],
+      title: 'Web Application',
+      description: 'We create and deliver flawless Web Application that accelerates business processes and enhances productivity along with business efficiency.',
+      overview: 'Our web application development services focus on creating robust, scalable, and secure applications tailored to your business needs. We use cutting-edge technologies and best practices to ensure your application performs optimally and provides an exceptional user experience.',
+      expertise: ['Custom Web Application Development', 'Progressive Web Apps (PWA)', 'Single Page Applications (SPA)', 'RESTful API Development', 'GraphQL Integration', 'Database Design & Optimization'],
       technologies: ['React', 'Next.js', 'Node.js', 'MongoDB', 'PostgreSQL', 'AWS', 'Docker', 'Kubernetes', 'Redis', 'GraphQL'],
       workflow: [
-        { step: 'Pre Discovery Phase', desc: 'Understanding your requirements and business goals' },
-        { step: 'Discovery Phase', desc: 'Detailed analysis, planning and feasibility study' },
-        { step: 'Architecture Design', desc: 'System architecture and technical design' },
-        { step: 'Design Phase', desc: 'UI/UX design and interactive prototyping' },
-        { step: 'Development & Testing', desc: 'Agile development with continuous testing' },
-        { step: 'Delivery Phase', desc: 'Final review, documentation and handover' },
-        { step: 'Launch & Deployment', desc: 'Production deployment and go-live' },
+        { step: 'Discovery Phase', desc: 'Understanding your requirements and business goals' },
+        { step: 'Planning & Design', desc: 'Architecture design and technical planning' },
+        { step: 'Development', desc: 'Agile development with continuous testing' },
+        { step: 'Testing & QA', desc: 'Comprehensive testing and quality assurance' },
+        { step: 'Deployment', desc: 'Production deployment and go-live' },
         { step: 'Support', desc: 'Ongoing maintenance and technical support' }
       ],
-      clients: ['Acme Corp', 'TechVision', 'GlobalSoft', 'InnovateLabs', 'DataFlow'],
+      clients: ['TechCorp Solutions', 'Global Finance Ltd', 'HealthCare Plus', 'EduTech Systems', 'RetailPro Inc'],
       values: [
-        { title: 'Collaborative Consulting', desc: 'We work closely with you throughout the project lifecycle' },
-        { title: 'Comprehensive Solutions', desc: 'End-to-end development services from concept to deployment' },
-        { title: 'Committed Support', desc: '24/7 support and maintenance for peace of mind' }
+        { title: 'Scalable Solutions', desc: 'Built to grow with your business needs' },
+        { title: 'Modern Technology', desc: 'Latest frameworks and best practices' },
+        { title: 'Fast Delivery', desc: 'Agile methodology for rapid development' }
       ]
     },
     'web-designing': {
       title: 'Web Designing',
-      description: 'Beautiful, user-friendly designs that engage users and drive conversions.',
-      overview: 'Our design team creates stunning, intuitive interfaces that captivate users and enhance brand identity. We focus on user experience, accessibility, and modern design principles to deliver websites that not only look great but perform exceptionally.',
-      expertise: ['UI/UX Design', 'Responsive Design', 'Brand Identity', 'Prototyping & Wireframing', 'Design Systems', 'User Research'],
-      technologies: ['Figma', 'Adobe XD', 'Sketch', 'Adobe Photoshop', 'Adobe Illustrator', 'InVision', 'Zeplin', 'Principle'],
+      description: 'Our core beliefs in good website designs are consistency, colors, typography, imagery, simplicity, and functionality.',
+      overview: 'We create visually stunning and user-friendly web designs that not only look great but also drive conversions. Our design process focuses on understanding your brand, target audience, and business goals to deliver designs that truly resonate.',
+      expertise: ['User Interface (UI) Design', 'User Experience (UX) Design', 'Responsive Web Design', 'Mobile-First Design', 'Interactive Prototyping', 'Brand Identity Design'],
+      technologies: ['Figma', 'Adobe XD', 'Sketch', 'InVision', 'Photoshop', 'Illustrator', 'After Effects', 'Principle'],
       workflow: [
         { step: 'Research', desc: 'User research and competitive analysis' },
         { step: 'Strategy', desc: 'Design strategy and information architecture' },
         { step: 'Wireframing', desc: 'Low-fidelity wireframes and user flows' },
         { step: 'Visual Design', desc: 'High-fidelity mockups and design system' },
         { step: 'Prototyping', desc: 'Interactive prototypes for testing' },
-        { step: 'User Testing', desc: 'Usability testing and feedback' },
-        { step: 'Refinement', desc: 'Design iterations and improvements' },
         { step: 'Handoff', desc: 'Developer handoff and design documentation' }
       ],
-      clients: ['StyleHub', 'DesignCo', 'BrandWorks', 'CreativeMinds', 'PixelPerfect'],
+      clients: ['Fashion Forward', 'Creative Agency Co', 'Luxury Hotels Group'],
       values: [
         { title: 'User-Centered Design', desc: 'Designs that prioritize user needs and behaviors' },
         { title: 'Brand Consistency', desc: 'Cohesive design language across all touchpoints' },
-        { title: 'Conversion Focused', desc: 'Designs optimized for business goals and conversions' }
+        { title: 'Conversion Focused', desc: 'Designs optimized for business goals' }
       ]
     },
     'ecommerce': {
-      title: 'E-Commerce Solutions',
-      description: 'Complete e-commerce platforms with payment integration and inventory management.',
-      overview: 'Build powerful online stores that drive sales and provide seamless shopping experiences. Our e-commerce solutions include custom storefronts, secure payment processing, inventory management, and advanced analytics to help you grow your online business.',
-      expertise: ['Custom Storefront Development', 'Payment Gateway Integration', 'Inventory Management', 'Order Processing', 'Multi-vendor Platforms', 'Mobile Commerce'],
-      technologies: ['Shopify', 'WooCommerce', 'Magento', 'Next.js Commerce', 'Stripe', 'PayPal', 'Square', 'BigCommerce'],
+      title: 'E-Commerce',
+      description: 'A Functional E-Commerce website can help increase sales by reaching customers who search for products online.',
+      overview: 'Our e-commerce solutions are designed to maximize conversions and provide seamless shopping experiences. From product catalogs to payment processing, we handle every aspect of your online store.',
+      expertise: ['Custom E-Commerce Development', 'Shopping Cart Solutions', 'Payment Gateway Integration', 'Order Management System', 'Inventory Management', 'Product Catalog Management'],
+      technologies: ['Shopify', 'WooCommerce', 'Magento', 'Custom Solutions', 'Stripe', 'PayPal', 'Razorpay', 'BigCommerce'],
       workflow: [
         { step: 'Business Analysis', desc: 'Understanding your e-commerce requirements' },
         { step: 'Platform Selection', desc: 'Choosing the right e-commerce platform' },
         { step: 'Store Design', desc: 'Custom storefront design and branding' },
         { step: 'Development', desc: 'Building features and integrations' },
         { step: 'Payment Setup', desc: 'Secure payment gateway integration' },
-        { step: 'Testing', desc: 'Comprehensive testing and QA' },
-        { step: 'Launch', desc: 'Store launch and go-live' },
-        { step: 'Optimization', desc: 'Ongoing optimization and support' }
+        { step: 'Launch', desc: 'Store launch and optimization' }
       ],
-      clients: ['ShopMart', 'FashionHub', 'TechStore', 'GroceryOnline', 'LuxuryBoutique'],
+      clients: ['ShopEasy Online', 'Fashion Boutique', 'Electronics Hub', 'Organic Foods Co', 'Sports Gear Pro', 'Home Decor Plus'],
       values: [
         { title: 'Seamless Experience', desc: 'Smooth shopping journey from browse to checkout' },
-        { title: 'Secure Transactions', desc: 'PCI-compliant payment processing and data security' },
+        { title: 'Secure Transactions', desc: 'PCI-compliant payment processing' },
         { title: 'Scalable Growth', desc: 'Solutions that grow with your business' }
       ]
     },
-    'mobile': {
-      title: 'iOS/Mobile Development',
-      description: 'Native and cross-platform mobile applications for iOS and Android.',
-      overview: 'Create engaging mobile experiences that users love. We develop high-performance native and cross-platform mobile applications using the latest technologies. From concept to app store deployment, we handle every aspect of mobile app development.',
-      expertise: ['iOS Development', 'Android Development', 'React Native', 'Flutter', 'Mobile UI/UX', 'App Store Optimization'],
-      technologies: ['Swift', 'Kotlin', 'React Native', 'Flutter', 'Xcode', 'Android Studio', 'Firebase', 'TestFlight'],
+    // Mobile Application Services
+    'ios': {
+      title: 'iOS Development',
+      description: 'We have a great team of iOS mobile app developers to support you at every stage of the process, from business validation and ideation to design, development, and release.',
+      overview: 'Our iOS development team specializes in creating high-performance, intuitive applications for iPhone and iPad. We leverage the latest iOS technologies and Apple design guidelines to deliver apps that users love.',
+      expertise: ['Native iOS Development', 'Swift & SwiftUI', 'App Store Optimization', 'Push Notifications', 'In-App Purchases', 'Core Data Integration'],
+      technologies: ['Swift', 'SwiftUI', 'Xcode', 'Firebase', 'Core Data', 'CloudKit', 'ARKit', 'HealthKit'],
       workflow: [
         { step: 'Ideation', desc: 'App concept and feature planning' },
-        { step: 'Design', desc: 'Mobile-first UI/UX design' },
-        { step: 'Development', desc: 'Native or cross-platform development' },
+        { step: 'Design', desc: 'iOS-specific UI/UX design' },
+        { step: 'Development', desc: 'Native iOS development' },
         { step: 'Testing', desc: 'Device testing and QA' },
-        { step: 'Beta Testing', desc: 'User testing and feedback' },
-        { step: 'App Store Submission', desc: 'Submission to app stores' },
-        { step: 'Launch', desc: 'App launch and marketing' },
-        { step: 'Updates', desc: 'Regular updates and maintenance' }
+        { step: 'Beta Testing', desc: 'TestFlight beta testing' },
+        { step: 'Launch', desc: 'App Store submission and launch' }
       ],
-      clients: ['MobileFirst', 'AppVenture', 'SwiftApps', 'MobileTech', 'AppInnovate'],
+      clients: ['Fitness Tracker Pro', 'Banking Plus', 'Food Delivery Now', 'Travel Companion', 'Social Connect', 'Learning Hub'],
       values: [
         { title: 'Native Performance', desc: 'Fast, responsive apps with native feel' },
-        { title: 'Cross-Platform Efficiency', desc: 'Code once, deploy everywhere' },
-        { title: 'App Store Success', desc: 'Optimized for app store approval and ranking' }
+        { title: 'Apple Guidelines', desc: 'Following Apple Human Interface Guidelines' },
+        { title: 'App Store Success', desc: 'Optimized for approval and ranking' }
       ]
     },
-    'windows': {
-      title: 'Windows Forms Development',
-      description: 'Powerful desktop applications for Windows, Mac, and Linux platforms.',
-      overview: 'Build robust desktop applications with rich user interfaces and powerful functionality. Our desktop solutions leverage modern frameworks to create cross-platform applications that work seamlessly across Windows, Mac, and Linux.',
-      expertise: ['Windows Forms', 'WPF Applications', 'Electron Apps', 'Cross-platform Development', 'Desktop UI/UX', 'System Integration'],
-      technologies: ['.NET Framework', 'WPF', 'Electron', 'C#', 'Visual Studio', 'Qt', 'JavaFX', 'Node.js'],
+    'android': {
+      title: 'Android Development',
+      description: 'We offer high ROI Customized Android app development with faster deployment and enhanced security features.',
+      overview: 'Our Android development expertise covers the entire Android ecosystem, from smartphones to tablets and wearables. We create feature-rich applications that work seamlessly across all Android devices.',
+      expertise: ['Native Android Development', 'Kotlin & Java', 'Material Design', 'Google Play Services', 'Firebase Integration', 'Room Database'],
+      technologies: ['Kotlin', 'Java', 'Android Studio', 'Firebase', 'Room', 'Retrofit', 'Dagger', 'Jetpack'],
       workflow: [
-        { step: 'Requirements', desc: 'Desktop application requirements analysis' },
-        { step: 'Architecture', desc: 'Application architecture and design' },
-        { step: 'UI Design', desc: 'Desktop interface design' },
-        { step: 'Development', desc: 'Application development and coding' },
-        { step: 'Integration', desc: 'System and third-party integrations' },
-        { step: 'Testing', desc: 'Comprehensive testing across platforms' },
-        { step: 'Deployment', desc: 'Application packaging and deployment' },
-        { step: 'Maintenance', desc: 'Updates and technical support' }
+        { step: 'Planning', desc: 'Android app planning and architecture' },
+        { step: 'Design', desc: 'Material Design implementation' },
+        { step: 'Development', desc: 'Native Android development' },
+        { step: 'Testing', desc: 'Multi-device testing' },
+        { step: 'Beta Testing', desc: 'Google Play beta testing' },
+        { step: 'Launch', desc: 'Play Store submission' }
       ],
-      clients: ['DesktopPro', 'EnterpriseApps', 'SystemWorks', 'DesktopSolutions', 'AppMaster'],
+      clients: ['Ride Share App', 'E-Wallet Solutions', 'News Portal', 'Gaming Platform', 'Healthcare Connect'],
       values: [
-        { title: 'Rich Functionality', desc: 'Full-featured desktop applications' },
-        { title: 'Cross-Platform', desc: 'Works on Windows, Mac, and Linux' },
-        { title: 'Offline Capability', desc: 'Applications that work without internet' }
+        { title: 'Wide Reach', desc: 'Access to billions of Android users' },
+        { title: 'Material Design', desc: 'Beautiful, consistent user interfaces' },
+        { title: 'Cross-device', desc: 'Works on phones, tablets, and wearables' }
       ]
     },
-    'saas': {
-      title: 'SaaS Development',
-      description: 'Scalable Software-as-a-Service solutions with subscription management.',
-      overview: 'Build and launch your SaaS product with our comprehensive development services. We create multi-tenant, scalable cloud applications with subscription billing, user management, and analytics. From MVP to enterprise-scale SaaS platforms.',
-      expertise: ['Multi-tenancy Architecture', 'Subscription Billing', 'Cloud Infrastructure', 'API Development', 'SaaS Security', 'Analytics & Reporting'],
-      technologies: ['AWS', 'Azure', 'Google Cloud', 'Stripe', 'Auth0', 'PostgreSQL', 'Redis', 'Kubernetes', 'Terraform', 'Microservices'],
+    'flutter': {
+      title: 'Flutter Development',
+      description: 'Cross-compile apps can be a better choice for running apps on multiple platforms. Therefore, Flutter offers more dynamic and faster app development and reducing in cost.',
+      overview: 'Flutter enables us to build beautiful, natively compiled applications for mobile, web, and desktop from a single codebase. This approach significantly reduces development time and costs while maintaining high performance.',
+      expertise: ['Cross-Platform Development', 'Single Codebase', 'Hot Reload', 'Rich Widget Library', 'Native Performance', 'Custom UI Components'],
+      technologies: ['Flutter', 'Dart', 'Firebase', 'Provider', 'Bloc', 'GetX', 'Dio', 'Hive'],
       workflow: [
-        { step: 'Product Strategy', desc: 'SaaS product planning and strategy' },
-        { step: 'MVP Development', desc: 'Minimum viable product development' },
-        { step: 'Infrastructure', desc: 'Cloud infrastructure setup' },
-        { step: 'Feature Development', desc: 'Core features and functionality' },
-        { step: 'Billing Integration', desc: 'Subscription and payment setup' },
-        { step: 'Security', desc: 'Security implementation and compliance' },
-        { step: 'Launch', desc: 'Product launch and onboarding' },
-        { step: 'Scale', desc: 'Scaling and optimization' }
+        { step: 'Planning', desc: 'Cross-platform app planning' },
+        { step: 'Design', desc: 'Custom widget design' },
+        { step: 'Development', desc: 'Flutter development with hot reload' },
+        { step: 'Testing', desc: 'Multi-platform testing' },
+        { step: 'Optimization', desc: 'Performance optimization' },
+        { step: 'Deployment', desc: 'Deploy to iOS and Android' }
       ],
-      clients: ['CloudSaaS', 'SoftwareHub', 'SaaSVenture', 'PlatformPro', 'CloudApps'],
+      clients: ['Multi-Platform Startup', 'Retail Chain App', 'Event Management', 'Real Estate Portal', 'Booking System', 'Fitness Community'],
       values: [
-        { title: 'Scalable Architecture', desc: 'Built to handle growth from day one' },
-        { title: 'Recurring Revenue', desc: 'Subscription billing and management' },
-        { title: 'Cloud Native', desc: 'Leveraging cloud infrastructure for reliability' }
+        { title: 'Cost Effective', desc: 'Single codebase for multiple platforms' },
+        { title: 'Fast Development', desc: 'Hot reload for rapid iteration' },
+        { title: 'Beautiful UI', desc: 'Customizable widgets and animations' }
       ]
     },
-    'seo': {
-      title: 'SEO/SEM Services',
-      description: 'Comprehensive digital marketing strategies to grow your online presence.',
-      overview: 'Boost your online visibility and drive qualified traffic with our SEO and SEM services. We combine technical SEO, content optimization, and paid advertising to help you rank higher, attract more visitors, and convert them into customers.',
-      expertise: ['SEO Optimization', 'Google Ads', 'Social Media Marketing', 'Content Marketing', 'Link Building', 'Analytics & Reporting'],
-      technologies: ['Google Analytics', 'Google Search Console', 'SEMrush', 'Ahrefs', 'Moz', 'Google Ads', 'Facebook Ads', 'Screaming Frog'],
+    'react-native': {
+      title: 'React Native Development',
+      description: 'React Native Mobile app development is the best choice for implementing functional and beautiful UI applications. An application will allow you to achieve remarkable efficiency.',
+      overview: 'React Native allows us to leverage JavaScript and React to build truly native mobile applications. Our team creates high-quality apps that provide native performance and user experience.',
+      expertise: ['Cross-Platform Apps', 'JavaScript/TypeScript', 'React Ecosystem', 'Native Modules', 'Third-party Libraries', 'Hot Reloading'],
+      technologies: ['React Native', 'TypeScript', 'Redux', 'React Navigation', 'Expo', 'Firebase', 'AsyncStorage'],
       workflow: [
-        { step: 'Audit', desc: 'Comprehensive SEO audit and analysis' },
-        { step: 'Strategy', desc: 'SEO/SEM strategy development' },
-        { step: 'Keyword Research', desc: 'Target keyword identification' },
-        { step: 'On-Page SEO', desc: 'Website optimization' },
-        { step: 'Content Creation', desc: 'SEO-optimized content development' },
-        { step: 'Link Building', desc: 'Quality backlink acquisition' },
-        { step: 'Campaign Management', desc: 'PPC campaign setup and management' },
-        { step: 'Reporting', desc: 'Performance tracking and reporting' }
+        { step: 'Setup', desc: 'React Native project setup' },
+        { step: 'Development', desc: 'Component-based development' },
+        { step: 'Integration', desc: 'Native module integration' },
+        { step: 'Testing', desc: 'Cross-platform testing' },
+        { step: 'Optimization', desc: 'Performance tuning' },
+        { step: 'Deployment', desc: 'App store deployment' }
       ],
-      clients: ['MarketPro', 'SEOExperts', 'DigitalGrowth', 'SearchMasters', 'AdVenture'],
+      clients: ['Social Network App', 'Marketplace Platform', 'Music Streaming', 'Task Manager Pro'],
       values: [
-        { title: 'Data-Driven Results', desc: 'Strategies based on analytics and insights' },
-        { title: 'Transparent Reporting', desc: 'Clear metrics and ROI tracking' },
-        { title: 'Long-term Growth', desc: 'Sustainable organic growth strategies' }
+        { title: 'React Ecosystem', desc: 'Leverage React knowledge and libraries' },
+        { title: 'Native Performance', desc: 'True native app performance' },
+        { title: 'Fast Iteration', desc: 'Quick development and updates' }
+      ]
+    },
+    'pwa': {
+      title: 'Progressive Web App (PWA)',
+      description: 'We Make web applications function similarly to mobile or desktop apps for a better user experience.',
+      overview: 'Progressive Web Apps combine the best of web and mobile apps. They work offline, load instantly, and provide an app-like experience without requiring installation from an app store.',
+      expertise: ['Offline Functionality', 'App-like Experience', 'Push Notifications', 'Fast Loading', 'Responsive Design', 'Service Workers'],
+      technologies: ['React', 'Vue.js', 'Service Workers', 'Workbox', 'IndexedDB', 'Web App Manifest', 'Lighthouse'],
+      workflow: [
+        { step: 'Planning', desc: 'PWA strategy and planning' },
+        { step: 'Development', desc: 'Progressive enhancement' },
+        { step: 'Service Workers', desc: 'Offline functionality setup' },
+        { step: 'Testing', desc: 'Cross-browser testing' },
+        { step: 'Optimization', desc: 'Performance optimization' },
+        { step: 'Deployment', desc: 'PWA deployment' }
+      ],
+      clients: ['News Portal PWA', 'E-commerce Lite', 'Weather App'],
+      values: [
+        { title: 'No Installation', desc: 'Works without app store installation' },
+        { title: 'Offline Access', desc: 'Works without internet connection' },
+        { title: 'Low Data Usage', desc: 'Minimal data consumption' }
       ]
     }
   };
 
-  const service = serviceData[resolvedParams.slug] || serviceData['web-application'];
+  const service = serviceData[resolvedParams.slug] || serviceData['web-development'];
 
   // If service not found, return 404 or redirect
   if (!serviceData[resolvedParams.slug]) {

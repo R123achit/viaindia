@@ -1,692 +1,225 @@
-'use client';
-
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import { useRef } from 'react';
-import { 
-  FaLightbulb, FaCheckCircle, FaTrophy, FaStar, FaRocket, 
-  FaUsers, FaAward, FaChartLine, FaArrowRight, FaQuoteLeft 
-} from 'react-icons/fa';
-import TeamSection from '@/components/TeamSection';
-import Link from 'next/link';
-
 export default function AboutPage() {
-  const containerRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
-
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  });
-
-  const values = [
-    {
-      icon: <FaLightbulb />,
-      title: 'Innovation',
-      description: 'Continuous learning and improvement drive our innovation and excellence in every project we undertake.',
-      color: 'from-blue-500 to-blue-600',
-      delay: 0
-    },
-    {
-      icon: <FaCheckCircle />,
-      title: 'Accountability',
-      description: 'We deliver the finest solutions with complete transparency and take full responsibility for our commitments.',
-      color: 'from-green-500 to-green-600',
-      delay: 0.1
-    },
-    {
-      icon: <FaTrophy />,
-      title: 'Success',
-      description: 'Great management team and collaborative approach ensure project success and client satisfaction.',
-      color: 'from-purple-500 to-purple-600',
-      delay: 0.2
-    },
-    {
-      icon: <FaStar />,
-      title: 'Excellence',
-      description: 'Building a sustainable future through exceptional quality and innovative technological solutions.',
-      color: 'from-orange-500 to-orange-600',
-      delay: 0.3
-    }
-  ];
-
-  const stats = [
-    { icon: <FaUsers />, number: '80+', label: 'Expert Team Members', color: 'from-blue-500 to-cyan-500' },
-    { icon: <FaRocket />, number: '750+', label: 'Projects Delivered', color: 'from-purple-500 to-pink-500' },
-    { icon: <FaAward />, number: '650+', label: 'Happy Clients', color: 'from-green-500 to-emerald-500' },
-    { icon: <FaChartLine />, number: '98%', label: 'Success Rate', color: 'from-orange-500 to-red-500' }
-  ];
-
   return (
-    <div ref={containerRef} className="overflow-hidden bg-white">
+    <div className="bg-white">
+      {/* Spacer for navigation */}
+      <div className="h-20"></div>
 
-      {/* Hero Section with Parallax */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-cyan-50">
-          <motion.div 
-            className="absolute inset-0"
-            style={{
-              backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(0, 102, 255, 0.05) 1px, transparent 0)',
-              backgroundSize: '40px 40px',
-              y: useTransform(smoothProgress, [0, 0.3], [0, -100])
-            }}
-          />
-        </div>
-
-        {/* Floating Orbs */}
-        <motion.div 
-          className="absolute top-20 right-20 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div 
-          className="absolute bottom-20 left-20 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl"
-          animate={{
-            scale: [1.2, 1, 1.2],
-            opacity: [0.5, 0.3, 0.5],
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        />
-
-        <div className="container-custom relative z-10 py-32">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-            className="text-center"
-          >
-            {/* Badge with Animation */}
-            <motion.div
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ 
-                type: "spring", 
-                stiffness: 200, 
-                damping: 15,
-                delay: 0.2 
-              }}
-              className="inline-block mb-8"
-            >
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full blur-xl opacity-50 animate-pulse"></div>
-                <span className="relative bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest shadow-lg inline-flex items-center gap-2">
-                  <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-                  About Viahind
-                </span>
-              </div>
-            </motion.div>
-
-            {/* Main Heading with Stagger */}
-            <div className="mb-8">
-              {['Transforming', 'Businesses', 'Through', 'Innovation'].map((word, idx) => (
-                <motion.span
-                  key={idx}
-                  initial={{ opacity: 0, y: 50 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ 
-                    duration: 0.8, 
-                    delay: 0.4 + idx * 0.1,
-                    ease: [0.6, -0.05, 0.01, 0.99]
-                  }}
-                  className="inline-block text-5xl md:text-6xl lg:text-7xl font-black text-gray-900 mr-4 mb-4"
-                >
-                  {word}
-                </motion.span>
-              ))}
-            </div>
-
-            {/* Subtitle with Fade */}
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1 }}
-              className="text-xl md:text-2xl lg:text-3xl text-gray-700 mb-12 max-w-4xl mx-auto"
-            >
-              Leading IT solutions provider empowering organizations with{' '}
-              <motion.span 
-                className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600 font-bold"
-                animate={{ backgroundPosition: ['0%', '100%', '0%'] }}
-                transition={{ duration: 5, repeat: Infinity }}
-              >
-                cutting-edge technology
-              </motion.span>
-            </motion.p>
-
-            {/* Quote Card with 3D Effect */}
-            <motion.div
-              initial={{ opacity: 0, y: 50, rotateX: -15 }}
-              animate={{ opacity: 1, y: 0, rotateX: 0 }}
-              transition={{ duration: 1, delay: 1.3 }}
-              className="relative max-w-4xl mx-auto perspective-1000"
-            >
-              <motion.div
-                whileHover={{ 
-                  scale: 1.02,
-                  rotateY: 2,
-                  rotateX: -2,
-                  transition: { duration: 0.3 }
-                }}
-                className="relative bg-white/80 backdrop-blur-xl p-12 rounded-3xl shadow-2xl border border-gray-200/50"
-                style={{ transformStyle: 'preserve-3d' }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 rounded-3xl"></div>
-                <FaQuoteLeft className="text-6xl text-blue-500/20 mb-4" />
-                <p className="text-3xl md:text-4xl lg:text-5xl font-black bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-4 leading-tight">
-                  Excellence for betterment of life
-                </p>
-                <div className="flex items-center justify-center gap-2 mt-6">
-                  <div className="w-12 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full"></div>
-                  <div className="w-1 h-1 bg-blue-500 rounded-full"></div>
-                  <div className="w-1 h-1 bg-cyan-500 rounded-full"></div>
-                </div>
-              </motion.div>
-            </motion.div>
-
-            {/* Scroll Indicator */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 2 }}
-              className="mt-16"
-            >
-              <motion.div
-                animate={{ y: [0, 10, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="inline-flex flex-col items-center gap-2 text-gray-400"
-              >
-                <span className="text-sm font-semibold">Scroll to explore</span>
-                <div className="w-6 h-10 border-2 border-gray-300 rounded-full flex items-start justify-center p-2">
-                  <motion.div
-                    animate={{ y: [0, 12, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                    className="w-1.5 h-1.5 bg-blue-500 rounded-full"
-                  />
-                </div>
-              </motion.div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Stats Section with Counter Animation */}
-      <section className="py-24 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden">
-        {/* Animated Grid Background */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: 'linear-gradient(#0066FF 1px, transparent 1px), linear-gradient(90deg, #0066FF 1px, transparent 1px)',
-            backgroundSize: '50px 50px'
-          }} />
-        </div>
-
-        <div className="container-custom relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
-              Our Impact in Numbers
-            </h2>
-            <p className="text-gray-400 text-xl">
-              Delivering excellence across the globe
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.5, rotateY: -90 }}
-                whileInView={{ opacity: 1, scale: 1, rotateY: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ 
-                  duration: 0.8, 
-                  delay: index * 0.1,
-                  type: "spring",
-                  stiffness: 100
-                }}
-                whileHover={{ 
-                  y: -10, 
-                  scale: 1.05,
-                  transition: { duration: 0.3 }
-                }}
-                className="group relative"
-              >
-                {/* Glow Effect */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} rounded-2xl blur-xl opacity-0 group-hover:opacity-50 transition-opacity duration-500`}></div>
-                
-                {/* Card */}
-                <div className="relative bg-gray-800/50 backdrop-blur-xl border border-gray-700 p-8 rounded-2xl text-center">
-                  <motion.div 
-                    className={`w-20 h-20 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center mx-auto mb-6 text-3xl text-white shadow-lg`}
-                    whileHover={{ rotate: 360 }}
-                    transition={{ duration: 0.6 }}
-                  >
-                    {stat.icon}
-                  </motion.div>
-                  <motion.div 
-                    className="text-5xl lg:text-6xl font-black text-white mb-3"
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                  >
-                    {stat.number}
-                  </motion.div>
-                  <div className="text-sm text-gray-400 font-semibold uppercase tracking-wider">
-                    {stat.label}
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Vision Section with Parallax */}
-      <section className="py-32 bg-white relative overflow-hidden">
-        <div className="container-custom">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-              {/* Left - Icon with Animation */}
-              <motion.div
-                initial={{ opacity: 0, x: -100 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8 }}
-                className="relative"
-              >
-                <motion.div
-                  animate={{ 
-                    rotate: [0, 5, -5, 0],
-                    scale: [1, 1.05, 1]
-                  }}
-                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                  className="relative"
-                >
-                  {/* Glow rings */}
-                  <motion.div
-                    animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                    className="absolute inset-0 bg-blue-500 rounded-full blur-3xl"
-                  />
-                  <motion.div
-                    animate={{ scale: [1.2, 1, 1.2], opacity: [0, 0.5, 0] }}
-                    transition={{ duration: 3, repeat: Infinity, delay: 1.5 }}
-                    className="absolute inset-0 bg-cyan-500 rounded-full blur-3xl"
-                  />
-                  
-                  {/* Main icon */}
-                  <div className="relative w-64 h-64 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-3xl flex items-center justify-center mx-auto shadow-2xl">
-                    <FaLightbulb className="text-9xl text-white" />
-                  </div>
-                </motion.div>
-
-                {/* Floating particles */}
-                {[...Array(6)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className="absolute w-2 h-2 bg-blue-400 rounded-full"
-                    style={{
-                      top: `${Math.random() * 100}%`,
-                      left: `${Math.random() * 100}%`,
-                    }}
-                    animate={{
-                      y: [0, -30, 0],
-                      opacity: [0, 1, 0],
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      delay: i * 0.5,
-                    }}
-                  />
-                ))}
-              </motion.div>
-
-              {/* Right - Content */}
-              <motion.div
-                initial={{ opacity: 0, x: 100 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-              >
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.4 }}
-                >
-                  <span className="inline-block bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wider mb-6">
-                    Our Vision
-                  </span>
-                </motion.div>
-
-                <motion.h2
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.5 }}
-                  className="text-4xl md:text-5xl font-black text-gray-900 mb-6 leading-tight"
-                >
-                  Leading the Digital Transformation
-                </motion.h2>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.6 }}
-                  className="space-y-6"
-                >
-                  <p className="text-xl text-gray-700 leading-relaxed">
-                    To be the <span className="font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600">global leader</span> in digital transformation, empowering businesses with cutting-edge technology solutions that drive innovation, efficiency, and sustainable growth.
-                  </p>
-                  <p className="text-xl text-gray-700 leading-relaxed">
-                    We envision a world where technology seamlessly integrates with business operations, creating <span className="font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600">smarter, more efficient, and more connected</span> organizations.
-                  </p>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.7 }}
-                  className="mt-8"
-                >
-                  <Link href="/contact">
-                    <motion.button
-                      whileHover={{ scale: 1.05, x: 5 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="group bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-2xl transition-all inline-flex items-center gap-3"
-                    >
-                      Start Your Journey
-                      <FaArrowRight className="group-hover:translate-x-2 transition-transform" />
-                    </motion.button>
-                  </Link>
-                </motion.div>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Mission Section with Cards */}
-      <section className="py-32 bg-gradient-to-br from-gray-50 to-blue-50 relative overflow-hidden">
-        <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <span className="inline-block bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wider mb-6">
-              Our Mission
-            </span>
-            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
-              Driving Transformation Through Technology
-            </h2>
-          </motion.div>
+      {/* Main Content - Text Section with Image Card */}
+      <section className="py-12 md:py-16">
+        <div className="container mx-auto px-4 max-w-6xl">
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-6xl mx-auto">
-            {[
-              {
-                emoji: '🤖',
-                title: 'Automate Businesses',
-                description: 'Through Smart IT Solutions that streamline operations and boost productivity',
-                gradient: 'from-blue-500 to-cyan-500'
-              },
-              {
-                emoji: '📈',
-                title: 'Excel Business Processes',
-                description: 'By implementing innovative technologies that optimize and transform operations',
-                gradient: 'from-purple-500 to-pink-500'
-              }
-            ].map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 50, rotateX: -20 }}
-                whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, delay: index * 0.2 }}
-                whileHover={{ 
-                  y: -10, 
-                  scale: 1.02,
-                  transition: { duration: 0.3 }
-                }}
-                className="group relative"
-              >
+          {/* Page Title - Professional Style */}
+          <div className="mb-12">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3">About Us</h1>
+            <div className="w-20 h-1 bg-blue-600"></div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center mb-12">
+            {/* Text Content */}
+            <div>
+              <p className="text-base md:text-lg text-gray-700 leading-relaxed mb-6">
+                At <strong>Viahind</strong>, we're much more than just your average IT service provider. As a customer-centric team of tech visionaries, we're dedicated to innovating new products that meet the evolving needs of our clients & delivering exceptional service that helps them stay ahead of the curve.
+              </p>
+              
+              <p className="text-base md:text-lg text-gray-700 leading-relaxed mb-6">
+                Our goal is simple - to help our clients achieve their business goals & maximize RoI through reliable and creative web-based solutions that are tailored to their unique needs. With over a decade of industry experience, a dedicated team of 80+ innovators, you can rest assured that you're in safe hands.
+              </p>
+              
+              <p className="text-base md:text-lg text-gray-700 leading-relaxed mb-6">
+                But we're not content with just delivering great services - we're also dedicated to transforming digital journeys and shaping the future of business. From IT strategy consulting to custom software development, we're focused on delivering real results that drive real change. Whether you're an individual, a startup, or a Fortune 500 company, we're here to help you achieve your goals and realize your full potential.
+              </p>
+
+              <p className="text-base md:text-lg text-gray-900 font-semibold italic">
+                Here at Viahind, Our motto is "Excellence for betterment of life."
+              </p>
+            </div>
+
+            {/* Image Card */}
+            <div>
+              <div className="relative group">
                 {/* Glow effect */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} rounded-3xl blur-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500`}></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-300"></div>
                 
-                {/* Card */}
-                <div className="relative bg-white/80 backdrop-blur-xl p-12 rounded-3xl shadow-xl border border-gray-200/50 overflow-hidden">
-                  {/* Background pattern */}
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-full blur-3xl opacity-50"></div>
-                  
-                  <motion.div
-                    whileHover={{ scale: 1.1, rotate: 10 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                    className={`relative w-20 h-20 bg-gradient-to-br ${item.gradient} rounded-2xl flex items-center justify-center mb-8 text-4xl shadow-lg`}
-                  >
-                    {item.emoji}
-                  </motion.div>
-                  
-                  <h3 className="text-3xl md:text-4xl font-black text-gray-900 mb-6">
-                    {item.title}
-                  </h3>
-                  
-                  <p className="text-xl text-gray-700 leading-relaxed">
-                    {item.description}
-                  </p>
-
-                  {/* Decorative line */}
-                  <motion.div
-                    className={`h-1 bg-gradient-to-r ${item.gradient} rounded-full mt-8`}
-                    initial={{ width: 0 }}
-                    whileInView={{ width: '100%' }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1, delay: 0.5 + index * 0.2 }}
-                  />
+                {/* Main card */}
+                <div className="relative bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-2xl p-12 flex items-center justify-center h-full min-h-[400px] border border-gray-100 shadow-xl">
+                  <div className="text-center">
+                    <div className="relative">
+                      {/* Icon background circle */}
+                      <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-2xl"></div>
+                      
+                      <svg className="relative w-40 h-40 mx-auto text-blue-600 mb-6 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                    </div>
+                    <p className="text-blue-700 font-bold text-lg">Building Digital Solutions</p>
+                    <p className="text-gray-600 text-sm mt-2">Innovation • Excellence • Growth</p>
+                  </div>
                 </div>
-              </motion.div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* Image Card Section 1 - Who We Are */}
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            {/* Image */}
+            <div className="order-2 lg:order-1">
+              <div className="relative group">
+                {/* Glow effect */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-300"></div>
+                
+                {/* Main card */}
+                <div className="relative bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50 rounded-2xl p-12 flex items-center justify-center h-80 border border-gray-100 shadow-xl">
+                  <div className="text-center">
+                    <div className="relative">
+                      {/* Icon background */}
+                      <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-2xl"></div>
+                      
+                      <svg className="relative w-32 h-32 mx-auto text-blue-600 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                    </div>
+                    <p className="text-blue-700 font-bold mt-4">Our Expert Team</p>
+                    <p className="text-gray-600 text-sm mt-1">80+ Professionals</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Text */}
+            <div className="order-1 lg:order-2">
+              <p className="text-base md:text-lg text-gray-700 leading-relaxed mb-4">
+                We're a team of passionate problem solvers, tech enthusiasts, and digital innovators. We help clients win in the markets they operate in. Our mission is simple - deliver disruptive, industry-oriented technology solutions, software platforms, and IT services that transform our clients' businesses. At Viahind, there's no such thing as a one-size-fits-all solution. That's why we work closely with our clients to identify their challenges, needs, and goals.
+              </p>
+              
+              <p className="text-base md:text-lg text-gray-700 leading-relaxed">
+                We're not just tech experts - we're digital alchemists who turn ideas into reality. We take pride in delivering digital experiences that are not just impactful but also awe-inspiring. So, whether you need a tech sidekick, a digital strategist, or a full-on IT superhero team, Viahind has got your back.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Image Card Section 2 - What We Do */}
+      <section className="py-12">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            {/* Text */}
+            <div>
+              <p className="text-base md:text-lg text-gray-700 leading-relaxed">
+                From designing, developing, and marketing desktop, web, and mobile applications, customized ERP solutions, e-commerce websites and much more, we do it all. In simple terms, we are the one-stop-solution for all our clients' tech needs. We help bridge the gap between technology and business goals. Leveraging the latest technologies and industry best practices, our team of experts accelerates brands' digital transformation journey and navigates them towards the future. With our full-cycle product development services and strategic gap filling, we are committed to delivering exceptional value and unparalleled results to our clients.
+              </p>
+            </div>
+            
+            {/* Image */}
+            <div>
+              <div className="relative group">
+                {/* Glow effect */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-300"></div>
+                
+                {/* Main card */}
+                <div className="relative bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 rounded-2xl p-12 flex items-center justify-center h-80 border border-gray-100 shadow-xl">
+                  <div className="text-center">
+                    <div className="relative">
+                      {/* Icon background */}
+                      <div className="absolute inset-0 bg-purple-500/10 rounded-full blur-2xl"></div>
+                      
+                      <svg className="relative w-32 h-32 mx-auto text-purple-600 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <p className="text-purple-700 font-bold mt-4">Comprehensive Services</p>
+                    <p className="text-gray-600 text-sm mt-1">End-to-End Solutions</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+              <div className="text-3xl md:text-4xl font-bold text-blue-600 mb-2">80+</div>
+              <div className="text-sm text-gray-600">Expert Team</div>
+            </div>
+            <div>
+              <div className="text-3xl md:text-4xl font-bold text-blue-600 mb-2">750+</div>
+              <div className="text-sm text-gray-600">Projects</div>
+            </div>
+            <div>
+              <div className="text-3xl md:text-4xl font-bold text-blue-600 mb-2">650+</div>
+              <div className="text-sm text-gray-600">Clients</div>
+            </div>
+            <div>
+              <div className="text-3xl md:text-4xl font-bold text-blue-600 mb-2">98%</div>
+              <div className="text-sm text-gray-600">Success Rate</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Vision & Mission Cards */}
+      <section className="py-12 md:py-16">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Vision Card */}
+            <div className="bg-white border border-gray-200 rounded-lg p-8 shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-bold text-gray-900 mb-3">Our Vision</h2>
+              <p className="text-base text-gray-600 leading-relaxed">
+                To be the global leader in digital transformation, empowering businesses with cutting-edge technology solutions that drive innovation, efficiency, and sustainable growth.
+              </p>
+            </div>
+
+            {/* Mission Card */}
+            <div className="bg-white border border-gray-200 rounded-lg p-8 shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-bold text-gray-900 mb-3">Our Mission</h2>
+              <p className="text-base text-gray-600 leading-relaxed">
+                To automate and excel business processes through smart IT solutions, delivering exceptional value and fostering long-term partnerships with our clients worldwide.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Core Values */}
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-10">Our Core Values</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { title: 'Innovation', desc: 'Continuous learning and improvement', icon: '💡' },
+              { title: 'Accountability', desc: 'Complete transparency', icon: '✓' },
+              { title: 'Success', desc: 'Collaborative excellence', icon: '🏆' },
+              { title: 'Excellence', desc: 'Exceptional quality', icon: '⭐' }
+            ].map((value, index) => (
+              <div key={index} className="bg-white border border-gray-200 rounded-lg p-6 text-center hover:shadow-md transition-shadow">
+                <div className="text-4xl mb-3">{value.icon}</div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{value.title}</h3>
+                <p className="text-sm text-gray-600">{value.desc}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Core Values Section with Advanced Animations */}
-      <section className="py-32 bg-white relative overflow-hidden">
-        <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <span className="inline-block bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wider mb-6">
-              What Drives Us
-            </span>
-            <h2 className="text-4xl md:text-5xl font-black text-gray-900">
-              Our Core Values
-            </h2>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((value, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 100, scale: 0.8 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ 
-                  duration: 0.6, 
-                  delay: value.delay,
-                  type: "spring",
-                  stiffness: 100
-                }}
-                whileHover={{ 
-                  y: -15, 
-                  scale: 1.05,
-                  transition: { duration: 0.3 }
-                }}
-                className="group relative"
-              >
-                {/* Animated border */}
-                <motion.div
-                  className={`absolute inset-0 bg-gradient-to-br ${value.color} rounded-3xl`}
-                  initial={{ opacity: 0 }}
-                  whileHover={{ opacity: 0.1 }}
-                  transition={{ duration: 0.3 }}
-                />
-
-                {/* Card */}
-                <div className="relative bg-white p-10 rounded-3xl shadow-xl border-2 border-gray-100 group-hover:border-transparent transition-all duration-300">
-                  {/* Icon with rotation */}
-                  <motion.div 
-                    className={`w-24 h-24 bg-gradient-to-br ${value.color} rounded-2xl flex items-center justify-center mx-auto mb-8 text-5xl text-white shadow-lg`}
-                    whileHover={{ 
-                      rotate: [0, -10, 10, -10, 0],
-                      scale: 1.1
-                    }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    {value.icon}
-                  </motion.div>
-                  
-                  <h3 className="mb-6 text-2xl md:text-3xl text-center font-black text-gray-900">
-                    {value.title}
-                  </h3>
-                  
-                  <p className="text-gray-600 text-center leading-relaxed text-lg">
-                    {value.description}
-                  </p>
-
-                  {/* Hover indicator */}
-                  <motion.div
-                    className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${value.color} rounded-b-3xl`}
-                    initial={{ scaleX: 0 }}
-                    whileHover={{ scaleX: 1 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Team Section */}
-      <TeamSection />
-
-      {/* CTA Section with Advanced Effects */}
-      <section className="py-32 bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-500 text-white relative overflow-hidden">
-        {/* Animated background elements */}
-        <div className="absolute inset-0">
-          <motion.div
-            animate={{
-              scale: [1, 1.2, 1],
-              rotate: [0, 90, 0],
-            }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"
-          />
-          <motion.div
-            animate={{
-              scale: [1.2, 1, 1.2],
-              rotate: [90, 0, 90],
-            }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="absolute bottom-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"
-          />
-        </div>
-
-        <div className="container-custom relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
-            <motion.span
-              initial={{ scale: 0 }}
-              whileInView={{ scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
-              className="inline-block bg-white/20 backdrop-blur-sm text-white px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest mb-8 border border-white/30"
-            >
-              Join Our Team
-            </motion.span>
-
-            <motion.h2
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="mb-8 max-w-5xl mx-auto text-white text-4xl md:text-5xl lg:text-6xl font-black leading-tight"
-            >
-              We have <motion.span 
-                className="text-yellow-300"
-                animate={{ scale: [1, 1.05, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                80+ powerful brains
-              </motion.span> who have already deployed{' '}
-              <motion.span 
-                className="text-yellow-300"
-                animate={{ scale: [1, 1.05, 1] }}
-                transition={{ duration: 2, repeat: Infinity, delay: 1 }}
-              >
-                750+ projects
-              </motion.span>
-            </motion.h2>
-            
-            <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              className="text-2xl md:text-3xl text-white/90 mb-12 max-w-3xl mx-auto"
-            >
-              We believe you do your <span className="font-bold italic">best work</span> when you feel your <span className="font-bold italic">best</span>
-            </motion.p>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.7 }}
-            >
-              <Link href="/work-culture">
-                <motion.button
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="group bg-white text-blue-600 px-12 py-6 rounded-full font-black text-xl shadow-2xl inline-flex items-center gap-4 hover:shadow-3xl transition-all"
-                >
-                  EXPLORE OUR WORK CULTURE
-                  <motion.div
-                    animate={{ x: [0, 5, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                  >
-                    <FaRocket />
-                  </motion.div>
-                </motion.button>
-              </Link>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import gsap from 'gsap';
 import { FaCheckCircle, FaStar, FaAward, FaGlobe } from 'react-icons/fa';
 
@@ -7,7 +7,8 @@ export default function ClientCarousel() {
   const row1Ref = useRef(null);
   const row2Ref = useRef(null);
   const statsRef = useRef(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const rafRef = useRef(null);
+  const mouseRef = useRef({ x: 0, y: 0 });
 
   // Client data with logo placeholders and industry info
   const clients = [
@@ -28,59 +29,80 @@ export default function ClientCarousel() {
     { name: 'NetSolutions', industry: 'Network', logo: 'NS', color: 'from-sky-400 to-sky-500' }
   ];
 
-  // Mouse move handler for parallax effect
+  // Reversed clients for row 2 (computed once, not mutating original)
+  const clientsReversed = [...clients].reverse();
+
+  // Mouse parallax for stats cards - using rAF instead of setState
   useEffect(() => {
+    let lastX = 0, lastY = 0;
+
     const handleMouseMove = (e) => {
-      const { clientX, clientY } = e;
-      const { innerWidth, innerHeight } = window;
-      const x = (clientX / innerWidth - 0.5) * 2;
-      const y = (clientY / innerHeight - 0.5) * 2;
-      setMousePosition({ x, y });
+      mouseRef.current.x = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseRef.current.y = (e.clientY / window.innerHeight - 0.5) * 2;
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    const animate = () => {
+      const { x, y } = mouseRef.current;
+      if (Math.abs(x - lastX) > 0.02 || Math.abs(y - lastY) > 0.02) {
+        lastX = x;
+        lastY = y;
+        if (statsRef.current) {
+          const cards = statsRef.current.querySelectorAll('.stat-card');
+          cards.forEach((card, index) => {
+            const depth = (index + 1) * 5;
+            gsap.to(card, {
+              x: x * depth,
+              y: y * depth,
+              duration: 0.8,
+              ease: 'power2.out',
+              overwrite: 'auto'
+            });
+          });
+        }
+      }
+      rafRef.current = requestAnimationFrame(animate);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    rafRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, []);
 
-  // Apply parallax to stats cards
-  useEffect(() => {
-    if (statsRef.current) {
-      const cards = statsRef.current.querySelectorAll('.stat-card');
-      cards.forEach((card, index) => {
-        const depth = (index + 1) * 5;
-        gsap.to(card, {
-          x: mousePosition.x * depth,
-          y: mousePosition.y * depth,
-          duration: 0.5,
-          ease: 'power2.out'
-        });
-      });
-    }
-  }, [mousePosition]);
-
+  // Carousel animations
   useEffect(() => {
     const row1 = row1Ref.current;
     const row2 = row2Ref.current;
 
-    gsap.to(row1, {
+    const tl1 = gsap.to(row1, {
       x: '-50%',
       duration: 50,
       ease: 'none',
       repeat: -1
     });
 
-    gsap.to(row2, {
-      x: '0%',
-      duration: 50,
-      ease: 'none',
-      repeat: -1,
-      from: { x: '-50%' }
-    });
+    const tl2 = gsap.fromTo(row2, 
+      { x: '-50%' },
+      {
+        x: '0%',
+        duration: 50,
+        ease: 'none',
+        repeat: -1,
+      }
+    );
+
+    return () => {
+      tl1.kill();
+      tl2.kill();
+    };
   }, []);
 
-  // 3D tilt effect handler
-  const handleCardMouseMove = (e, cardRef) => {
-    const card = cardRef;
+  // 3D tilt effect handler - no state involved
+  const handleCardMouseMove = useCallback((e) => {
+    const card = e.currentTarget;
     const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -96,18 +118,20 @@ export default function ClientCarousel() {
       rotateY: rotateY,
       duration: 0.3,
       ease: 'power2.out',
-      transformPerspective: 1000
+      transformPerspective: 1000,
+      overwrite: 'auto'
     });
-  };
+  }, []);
 
-  const handleCardMouseLeave = (cardRef) => {
-    gsap.to(cardRef, {
+  const handleCardMouseLeave = useCallback((e) => {
+    gsap.to(e.currentTarget, {
       rotateX: 0,
       rotateY: 0,
       duration: 0.5,
-      ease: 'power2.out'
+      ease: 'power2.out',
+      overwrite: 'auto'
     });
-  };
+  }, []);
 
   return (
     <section className="bg-gradient-to-b from-gray-50 to-white py-24 overflow-hidden relative">
@@ -149,8 +173,8 @@ export default function ClientCarousel() {
           <div 
             className="stat-card group bg-white/60 backdrop-blur-md p-8 rounded-2xl border border-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 relative overflow-hidden cursor-pointer"
             style={{ transformStyle: 'preserve-3d' }}
-            onMouseMove={(e) => handleCardMouseMove(e, e.currentTarget)}
-            onMouseLeave={(e) => handleCardMouseLeave(e.currentTarget)}
+            onMouseMove={handleCardMouseMove}
+            onMouseLeave={handleCardMouseLeave}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative z-10" style={{ transform: 'translateZ(50px)' }}>
@@ -165,8 +189,8 @@ export default function ClientCarousel() {
           <div 
             className="stat-card group bg-white/60 backdrop-blur-md p-8 rounded-2xl border border-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 relative overflow-hidden cursor-pointer"
             style={{ transformStyle: 'preserve-3d' }}
-            onMouseMove={(e) => handleCardMouseMove(e, e.currentTarget)}
-            onMouseLeave={(e) => handleCardMouseLeave(e.currentTarget)}
+            onMouseMove={handleCardMouseMove}
+            onMouseLeave={handleCardMouseLeave}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative z-10" style={{ transform: 'translateZ(50px)' }}>
@@ -181,8 +205,8 @@ export default function ClientCarousel() {
           <div 
             className="stat-card group bg-white/60 backdrop-blur-md p-8 rounded-2xl border border-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 relative overflow-hidden cursor-pointer"
             style={{ transformStyle: 'preserve-3d' }}
-            onMouseMove={(e) => handleCardMouseMove(e, e.currentTarget)}
-            onMouseLeave={(e) => handleCardMouseLeave(e.currentTarget)}
+            onMouseMove={handleCardMouseMove}
+            onMouseLeave={handleCardMouseLeave}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-cyan-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative z-10" style={{ transform: 'translateZ(50px)' }}>
@@ -197,8 +221,8 @@ export default function ClientCarousel() {
           <div 
             className="stat-card group bg-white/60 backdrop-blur-md p-8 rounded-2xl border border-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 relative overflow-hidden cursor-pointer"
             style={{ transformStyle: 'preserve-3d' }}
-            onMouseMove={(e) => handleCardMouseMove(e, e.currentTarget)}
-            onMouseLeave={(e) => handleCardMouseLeave(e.currentTarget)}
+            onMouseMove={handleCardMouseMove}
+            onMouseLeave={handleCardMouseLeave}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-teal-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative z-10" style={{ transform: 'translateZ(50px)' }}>
@@ -224,8 +248,8 @@ export default function ClientCarousel() {
                   key={index} 
                   className="group min-w-[200px] flex-shrink-0 bg-white/80 backdrop-blur-sm rounded-xl p-5 transition-all duration-300 hover:shadow-xl border border-gray-200 cursor-pointer relative overflow-hidden"
                   style={{ transformStyle: 'preserve-3d' }}
-                  onMouseMove={(e) => handleCardMouseMove(e, e.currentTarget)}
-                  onMouseLeave={(e) => handleCardMouseLeave(e.currentTarget)}
+                  onMouseMove={handleCardMouseMove}
+                  onMouseLeave={handleCardMouseLeave}
                 >
                   {/* Hover gradient overlay */}
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -260,13 +284,13 @@ export default function ClientCarousel() {
             <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none"></div>
             
             <div ref={row2Ref} className="flex gap-6 will-change-transform">
-              {[...clients.reverse(), ...clients].map((client, index) => (
+              {[...clientsReversed, ...clientsReversed].map((client, index) => (
                 <div 
                   key={index} 
                   className="group min-w-[200px] flex-shrink-0 bg-white/80 backdrop-blur-sm rounded-xl p-5 transition-all duration-300 hover:shadow-xl border border-gray-200 cursor-pointer relative overflow-hidden"
                   style={{ transformStyle: 'preserve-3d' }}
-                  onMouseMove={(e) => handleCardMouseMove(e, e.currentTarget)}
-                  onMouseLeave={(e) => handleCardMouseLeave(e.currentTarget)}
+                  onMouseMove={handleCardMouseMove}
+                  onMouseLeave={handleCardMouseLeave}
                 >
                   {/* Hover gradient overlay */}
                   <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

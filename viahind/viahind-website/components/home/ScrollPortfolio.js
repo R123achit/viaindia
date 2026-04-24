@@ -1,12 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { portfolioServices, animationConfig, layoutConfig } from '@/config/scrollPortfolioData';
-
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
+import MobileDeviceMockups from './MobileDeviceMockups';
 
 // Service-specific gradient configurations
 const serviceGradients = {
@@ -19,102 +14,89 @@ const serviceGradients = {
   'Social Media Marketing': 'from-[#FF7A3D] via-[#F06A2E] to-[#D95A20]'
 };
 
+const totalSections = portfolioServices.length;
+
 export default function ScrollPortfolio() {
-  const containerRef = useRef(null);
+  const wrapperRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isSkipped, setIsSkipped] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
-    return () => {
-      setIsMounted(false);
-    };
+    return () => setIsMounted(false);
   }, []);
 
+  // CSS sticky scroll tracking — no GSAP pin, no DOM reparenting
   useEffect(() => {
     if (!isMounted || isSkipped || typeof window === 'undefined') return;
 
-    const container = containerRef.current;
-    if (!container) return;
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
 
-    const totalSections = portfolioServices.length;
+    const handleScroll = () => {
+      const rect = wrapper.getBoundingClientRect();
+      const wrapperHeight = wrapper.offsetHeight;
+      const viewportHeight = window.innerHeight;
+      const scrollableDistance = wrapperHeight - viewportHeight;
 
-    const timer = setTimeout(() => {
-      try {
-        const scrollTrigger = ScrollTrigger.create({
-          trigger: container,
-          start: 'top top',
-          end: `+=${totalSections * 100}%`,
-          pin: true,
-          pinSpacing: true,
-          anticipatePin: 1,
-          scrub: animationConfig.scrollSpeed,
-          snap: {
-            snapTo: 1 / (totalSections - 1),
-            duration: animationConfig.snapDuration,
-            ease: animationConfig.snapEase
-          },
-          onUpdate: (self) => {
-            const progress = self.progress;
-            const newIndex = Math.min(
-              Math.floor(progress * totalSections),
-              totalSections - 1
-            );
-            setActiveIndex(newIndex);
-          },
-          invalidateOnRefresh: true
-        });
-
-        return () => {
-          if (scrollTrigger) {
-            scrollTrigger.kill();
-          }
-        };
-      } catch (error) {
-        console.error('ScrollTrigger error:', error);
+      if (rect.top <= 0 && rect.bottom >= viewportHeight && scrollableDistance > 0) {
+        const scrolled = -rect.top;
+        const progress = Math.min(Math.max(scrolled / scrollableDistance, 0), 1);
+        const newIndex = Math.min(
+          Math.floor(progress * totalSections),
+          totalSections - 1
+        );
+        setActiveIndex(newIndex);
       }
-    }, 100);
-
-    return () => {
-      clearTimeout(timer);
     };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // set initial value
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [isSkipped, isMounted]);
 
   const handleSkip = () => {
     setIsSkipped(true);
-    if (typeof window !== 'undefined') {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-      window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
+    if (wrapperRef.current) {
+      const bottom = wrapperRef.current.getBoundingClientRect().bottom + window.scrollY;
+      window.scrollTo({ top: bottom, behavior: 'smooth' });
     }
   };
 
   const handleServiceClick = (index) => {
     setActiveIndex(index);
-    if (containerRef.current) {
-      containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (wrapperRef.current) {
+      const wrapperTop = wrapperRef.current.getBoundingClientRect().top + window.scrollY;
+      const wrapperHeight = wrapperRef.current.offsetHeight;
+      const viewportHeight = window.innerHeight;
+      const scrollableDistance = wrapperHeight - viewportHeight;
+      const targetScroll = wrapperTop + (index / (totalSections - 1)) * scrollableDistance;
+      window.scrollTo({ top: targetScroll, behavior: 'smooth' });
     }
   };
 
   const currentService = portfolioServices[activeIndex];
   const currentGradient = serviceGradients[currentService.title] || 'from-blue-600 to-blue-800';
 
+  // On mobile or when skipped, render without the tall wrapper
+  const useSticky = !isSkipped;
+
   return (
-    <section
-      ref={containerRef}
-      className="relative w-full overflow-hidden"
-      style={{ 
-        height: 'auto',
-        minHeight: '100vh',
-        margin: 0, 
-        padding: 0
-      }}
+    <div
+      ref={wrapperRef}
+      style={useSticky ? { height: `${totalSections * 100}vh` } : undefined}
+      className="relative"
     >
-      {/* Full Background Gradient - Covers entire viewport including behind nav */}
-      <div
-        className={`absolute lg:fixed top-0 left-0 right-0 bottom-0 bg-gradient-to-br ${currentGradient} transition-all duration-700 ease-in-out`}
-        style={{ zIndex: 0 }}
-      />
+      <section
+        className={`relative w-full overflow-hidden ${useSticky ? 'lg:sticky lg:top-0' : ''}`}
+        style={{ minHeight: '100vh' }}
+      >
+        {/* Full Background Gradient - Covers entire viewport including behind nav */}
+        <div
+          className={`absolute top-0 left-0 right-0 bottom-0 bg-gradient-to-br ${currentGradient} transition-all duration-700 ease-in-out`}
+          style={{ zIndex: 0 }}
+        />
       
       {/* Mobile Layout - Stack vertically */}
       <div className="lg:hidden relative z-10 flex flex-col min-h-screen">
@@ -346,7 +328,8 @@ export default function ScrollPortfolio() {
           ))}
         </div>
       )}
-    </section>
+      </section>
+    </div>
   );
 }
 
@@ -607,7 +590,7 @@ function DeviceMockups({ service }) {
                 <div className="w-0.5 h-0.5 bg-gray-800 rounded-full"></div>
               </div>
             </div>
-            <div className="bg-white rounded-[1.8rem] overflow-hidden aspect-[9/19] relative">
+            <div className="bg-white rounded-[1.8rem] overflow-hidden aspect-[9/20] relative">
               <DeviceContent service={service} type="mobile" label="OnePlus 12" />
             </div>
           </div>
@@ -749,438 +732,4 @@ function ServiceIcon({ title, className }) {
   };
 
   return icons[title] || icons['Web Applications'];
-}
-
-// Mobile Device Mockups - High-quality unique designs with advanced animations
-function MobileDeviceMockups({ service, gradient }) {
-  // Web Applications: MacBook Pro + iPhone 15 Pro with 3D perspective
-  if (service.title === 'Web Applications') {
-    return (
-      <div className="relative w-full h-full flex items-center justify-center p-4" style={{ perspective: '1000px' }}>
-        {/* Animated background glow */}
-        <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-5 animate-pulse-slow`}></div>
-        
-        {/* MacBook Pro - Center with 3D tilt */}
-        <div className="absolute z-20 w-[75%] max-w-[300px] top-[12%] animate-device-float" style={{ transformStyle: 'preserve-3d' }}>
-          <div className="relative group">
-            {/* Screen glow effect */}
-            <div className={`absolute -inset-2 bg-gradient-to-r ${gradient} opacity-20 blur-xl group-hover:opacity-30 transition-opacity duration-500`}></div>
-            <div className="relative bg-gradient-to-b from-gray-900 to-gray-800 rounded-t-2xl p-1 shadow-2xl border border-gray-700">
-              {/* Camera notch */}
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-4 bg-gray-900 rounded-b-xl z-10 flex items-center justify-center">
-                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-              </div>
-              {/* Screen with gradient reflection */}
-              <div className="relative bg-white rounded-t-lg overflow-hidden aspect-video">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent pointer-events-none"></div>
-                <DeviceContent service={service} type="laptop" label="MacBook Pro 16&quot;" />
-              </div>
-            </div>
-            {/* Keyboard base with metallic effect */}
-            <div className="h-2 bg-gradient-to-b from-gray-800 via-gray-700 to-gray-800 rounded-b-2xl shadow-xl"></div>
-            <div className="h-0.5 bg-gradient-to-r from-transparent via-gray-600 to-transparent w-4/5 mx-auto"></div>
-          </div>
-        </div>
-        
-        {/* iPhone 15 Pro - Bottom Right with rotation */}
-        <div className="absolute z-30 w-[38%] max-w-[130px] bottom-[5%] right-[8%] animate-device-float-delayed rotate-[8deg]" style={{ transformStyle: 'preserve-3d' }}>
-          <div className="relative group">
-            {/* Phone glow */}
-            <div className={`absolute -inset-1 bg-gradient-to-r ${gradient} opacity-30 blur-lg group-hover:opacity-40 transition-opacity duration-500`}></div>
-            <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-black rounded-[2.2rem] p-1 shadow-2xl border border-gray-700">
-              {/* Dynamic Island with animation */}
-              <div className="absolute top-3 left-1/2 transform -translate-x-1/2 z-10">
-                <div className="bg-black rounded-full px-4 py-1.5 shadow-inner flex items-center gap-2 animate-pulse-subtle">
-                  <div className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-ping-slow"></div>
-                  <div className="w-1 h-1 bg-gray-700 rounded-full"></div>
-                </div>
-              </div>
-              {/* Screen with glass effect */}
-              <div className="relative bg-white rounded-[2rem] overflow-hidden aspect-[9/19.5]">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent pointer-events-none"></div>
-                <DeviceContent service={service} type="mobile" label="iPhone 15 Pro" />
-              </div>
-              {/* Side buttons */}
-              <div className="absolute left-0 top-20 w-0.5 h-8 bg-gray-700 rounded-r"></div>
-              <div className="absolute right-0 top-16 w-0.5 h-12 bg-gray-700 rounded-l"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Web Designing: iMac 24" + iPad Pro with Apple Pencil
-  if (service.title === 'Web Designing') {
-    return (
-      <div className="relative w-full h-full flex items-center justify-center p-4" style={{ perspective: '1200px' }}>
-        {/* Colorful design background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-green-100 via-blue-50 to-purple-50 opacity-30 animate-gradient-shift"></div>
-        
-        {/* iMac 24" - Center with chin */}
-        <div className="absolute z-20 w-[78%] max-w-[310px] top-[8%] animate-device-float-slow" style={{ transformStyle: 'preserve-3d' }}>
-          <div className="relative group">
-            {/* Screen glow - colorful */}
-            <div className="absolute -inset-3 bg-gradient-to-r from-green-400 via-blue-400 to-purple-400 opacity-20 blur-2xl group-hover:opacity-30 transition-opacity duration-700"></div>
-            {/* iMac body with thin bezels */}
-            <div className="relative bg-gradient-to-b from-gray-100 to-gray-200 rounded-2xl p-0.5 shadow-2xl">
-              {/* Ultra-thin bezel */}
-              <div className="bg-black rounded-2xl p-[2px]">
-                <div className="relative bg-white rounded-[15px] overflow-hidden aspect-video">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-transparent to-transparent pointer-events-none"></div>
-                  <DeviceContent service={service} type="laptop" label="iMac 24&quot; Design" />
-                </div>
-              </div>
-              {/* Bottom chin with camera */}
-              <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-gray-800 rounded-full"></div>
-            </div>
-            {/* Aluminum stand */}
-            <div className="flex flex-col items-center">
-              <div className="w-14 h-12 bg-gradient-to-b from-gray-200 via-gray-100 to-gray-200 rounded-b-xl shadow-inner"></div>
-              <div className="w-24 h-2.5 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full shadow-lg"></div>
-            </div>
-          </div>
-        </div>
-        
-        {/* iPad Pro with Pencil - Bottom Left */}
-        <div className="absolute z-30 w-[42%] max-w-[150px] bottom-[6%] left-[6%] rotate-[-12deg] animate-device-float-delayed" style={{ transformStyle: 'preserve-3d' }}>
-          <div className="relative group">
-            {/* iPad glow */}
-            <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-purple-400 opacity-25 blur-lg group-hover:opacity-35 transition-opacity duration-500"></div>
-            <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-1 shadow-xl border border-gray-700">
-              {/* Screen */}
-              <div className="relative bg-white rounded-xl overflow-hidden aspect-[4/3]">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent pointer-events-none"></div>
-                <DeviceContent service={service} type="tablet" label="iPad Pro" />
-              </div>
-              {/* Camera bump */}
-              <div className="absolute top-2 right-2 w-3 h-3 bg-gray-900 rounded-full border border-gray-700"></div>
-            </div>
-            {/* Apple Pencil */}
-            <div className="absolute -right-2 top-1/2 transform translate-x-full -translate-y-1/2 rotate-45 w-1 h-16 bg-gradient-to-b from-white via-gray-100 to-white rounded-full shadow-lg"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // E-Commerce: Surface Laptop + Galaxy S24 Ultra with shopping cart animation
-  if (service.title === 'E-Commerce Website') {
-    return (
-      <div className="relative w-full h-full flex items-center justify-center p-4" style={{ perspective: '1000px' }}>
-        {/* Shopping theme background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-50 via-blue-50 to-teal-50 opacity-40 animate-gradient-shift"></div>
-        
-        {/* Floating cart icon */}
-        <div className="absolute top-4 right-4 z-10 animate-bounce-slow">
-          <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${gradient} flex items-center justify-center shadow-lg`}>
-            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-          </div>
-        </div>
-        
-        {/* Surface Laptop - Top with keyboard visible */}
-        <div className="absolute z-20 w-[76%] max-w-[305px] top-[8%] animate-device-float-slow" style={{ transformStyle: 'preserve-3d' }}>
-          <div className="relative group">
-            {/* Screen glow */}
-            <div className={`absolute -inset-3 bg-gradient-to-r ${gradient} opacity-20 blur-xl group-hover:opacity-30 transition-opacity duration-500`}></div>
-            <div className="relative bg-gradient-to-b from-gray-700 to-gray-800 rounded-t-xl p-1 shadow-2xl">
-              {/* Webcam */}
-              <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-gray-900 rounded-full z-10"></div>
-              {/* Screen */}
-              <div className="relative bg-white rounded-t-md overflow-hidden aspect-video">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent pointer-events-none"></div>
-                <DeviceContent service={service} type="laptop" label="E-Commerce Store" />
-              </div>
-            </div>
-            {/* Keyboard base */}
-            <div className="h-2.5 bg-gradient-to-b from-gray-700 via-gray-600 to-gray-700 rounded-b-xl shadow-xl"></div>
-            <div className="h-0.5 bg-gray-500 w-3/4 mx-auto"></div>
-          </div>
-        </div>
-        
-        {/* Galaxy S24 Ultra - Bottom with S Pen */}
-        <div className="absolute z-30 w-[40%] max-w-[140px] bottom-[8%] right-[10%] rotate-[6deg] animate-device-float-delayed" style={{ transformStyle: 'preserve-3d' }}>
-          <div className="relative group">
-            {/* Phone glow */}
-            <div className={`absolute -inset-2 bg-gradient-to-r ${gradient} opacity-30 blur-lg group-hover:opacity-40 transition-opacity duration-500`}></div>
-            <div className="relative bg-gradient-to-br from-purple-900 via-blue-900 to-purple-900 rounded-[2rem] p-1 shadow-2xl border border-purple-700">
-              {/* Punch hole camera */}
-              <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gray-900 rounded-full z-10 border border-gray-800"></div>
-              {/* Screen */}
-              <div className="relative bg-white rounded-[1.8rem] overflow-hidden aspect-[9/19.5]">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none"></div>
-                <DeviceContent service={service} type="mobile" label="Galaxy S24 Ultra" />
-              </div>
-              {/* Camera module */}
-              <div className="absolute top-3 left-3 w-8 h-10 bg-gray-900 rounded-2xl border border-gray-800 flex flex-col items-center justify-around py-1">
-                <div className="w-3 h-3 bg-gray-700 rounded-full"></div>
-                <div className="w-2.5 h-2.5 bg-gray-700 rounded-full"></div>
-                <div className="w-2 h-2 bg-gray-700 rounded-full"></div>
-              </div>
-            </div>
-            {/* S Pen */}
-            <div className="absolute -left-1 bottom-4 w-0.5 h-12 bg-gradient-to-b from-purple-400 to-purple-600 rounded-full shadow-lg transform -rotate-12"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Mobile App: iPhone 15 Pro Max + iPad Pro + Pixel 8 Pro - Triple device showcase
-  if (service.title === 'Mobile App Development') {
-    return (
-      <div className="relative w-full h-full flex items-center justify-center p-4" style={{ perspective: '1500px' }}>
-        {/* Code-themed background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 opacity-40 animate-gradient-shift"></div>
-        
-        {/* Floating code brackets */}
-        <div className="absolute top-6 left-6 text-purple-300 text-2xl font-mono animate-pulse-slow opacity-30">&lt;/&gt;</div>
-        <div className="absolute bottom-6 right-6 text-blue-300 text-xl font-mono animate-pulse-slow opacity-30">{ }</div>
-        
-        {/* iPhone 15 Pro Max - Center Large with Dynamic Island */}
-        <div className="absolute z-40 w-[48%] max-w-[170px] animate-device-float-center" style={{ transformStyle: 'preserve-3d' }}>
-          <div className="relative group">
-            {/* Premium glow */}
-            <div className="absolute -inset-3 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 opacity-30 blur-xl group-hover:opacity-40 transition-opacity duration-700 animate-pulse-slow"></div>
-            <div className="relative bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-[2.5rem] p-1 shadow-2xl border border-gray-700">
-              {/* Dynamic Island - Premium animation */}
-              <div className="absolute top-3 left-1/2 transform -translate-x-1/2 z-10">
-                <div className="bg-black rounded-full px-5 py-2 shadow-inner flex items-center gap-2.5 animate-pulse-subtle">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full animate-ping-slow"></div>
-                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
-                  <div className="w-1 h-1 bg-gray-700 rounded-full"></div>
-                </div>
-              </div>
-              {/* Screen with premium glass effect */}
-              <div className="relative bg-white rounded-[2.2rem] overflow-hidden aspect-[9/19.5]">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent pointer-events-none"></div>
-                <div className="absolute inset-0 bg-gradient-to-tl from-purple-100/20 via-transparent to-blue-100/20 pointer-events-none"></div>
-                <DeviceContent service={service} type="mobile" label="iPhone 15 Pro Max" />
-              </div>
-              {/* Action button */}
-              <div className="absolute left-0 top-24 w-0.5 h-6 bg-orange-500 rounded-r shadow-lg"></div>
-              {/* Volume buttons */}
-              <div className="absolute left-0 top-16 w-0.5 h-4 bg-gray-700 rounded-r"></div>
-              <div className="absolute left-0 top-20 w-0.5 h-4 bg-gray-700 rounded-r"></div>
-              {/* Power button */}
-              <div className="absolute right-0 top-20 w-0.5 h-8 bg-gray-700 rounded-l"></div>
-            </div>
-          </div>
-        </div>
-        
-        {/* iPad Pro - Left with Magic Keyboard */}
-        <div className="absolute z-30 w-[44%] max-w-[155px] left-[4%] top-[18%] rotate-[-8deg] animate-device-float-delayed" style={{ transformStyle: 'preserve-3d' }}>
-          <div className="relative group">
-            {/* iPad glow */}
-            <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-cyan-400 opacity-25 blur-lg group-hover:opacity-35 transition-opacity duration-500"></div>
-            <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-1 shadow-xl border border-gray-700">
-              {/* Screen */}
-              <div className="relative bg-white rounded-xl overflow-hidden aspect-[4/3]">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent pointer-events-none"></div>
-                <DeviceContent service={service} type="tablet" label="iPad Pro 12.9&quot;" />
-              </div>
-              {/* Camera module */}
-              <div className="absolute top-2 right-2 w-4 h-4 bg-gray-900 rounded-lg border border-gray-700 flex items-center justify-center">
-                <div className="w-2 h-2 bg-gray-700 rounded-full"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Pixel 8 Pro - Right with Material You design */}
-        <div className="absolute z-30 w-[38%] max-w-[130px] right-[6%] bottom-[12%] rotate-[10deg] animate-device-float-slow" style={{ transformStyle: 'preserve-3d' }}>
-          <div className="relative group">
-            {/* Pixel glow */}
-            <div className="absolute -inset-2 bg-gradient-to-r from-green-400 to-blue-400 opacity-25 blur-lg group-hover:opacity-35 transition-opacity duration-500"></div>
-            <div className="relative bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-[2rem] p-1 shadow-xl border border-gray-700">
-              {/* Punch hole camera */}
-              <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-2.5 h-2.5 bg-gray-900 rounded-full z-10 border border-gray-800"></div>
-              {/* Screen */}
-              <div className="relative bg-white rounded-[1.8rem] overflow-hidden aspect-[9/20]">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none"></div>
-                <DeviceContent service={service} type="mobile" label="Pixel 8 Pro" />
-              </div>
-              {/* Camera bar - Pixel signature */}
-              <div className="absolute top-2 left-2 right-2 h-8 bg-gray-900 rounded-full border border-gray-800 flex items-center justify-around px-2">
-                <div className="w-4 h-4 bg-gray-700 rounded-full"></div>
-                <div className="w-3.5 h-3.5 bg-gray-700 rounded-full"></div>
-                <div className="w-2.5 h-2.5 bg-blue-500 rounded-full animate-pulse"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Desktop Applications: Curved Gaming Monitor + Mechanical Keyboard aesthetic
-  if (service.title === 'Desktop Applications') {
-    return (
-      <div className="relative w-full h-full flex items-center justify-center p-4" style={{ perspective: '1200px' }}>
-        {/* Tech background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 opacity-30 animate-gradient-shift"></div>
-        
-        {/* RGB lighting effect */}
-        <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-red-500/20 via-purple-500/10 to-transparent animate-pulse-slow"></div>
-        
-        {/* Curved Gaming Monitor - Center Large */}
-        <div className="absolute z-30 w-[82%] max-w-[330px] top-[10%] animate-device-float-slow" style={{ transformStyle: 'preserve-3d' }}>
-          <div className="relative group">
-            {/* RGB glow */}
-            <div className="absolute -inset-3 bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 opacity-25 blur-xl group-hover:opacity-35 transition-opacity duration-700 animate-pulse-slow"></div>
-            {/* Monitor with RGB trim */}
-            <div className="relative bg-black rounded-2xl p-1 shadow-2xl border-2 border-red-600">
-              {/* Screen */}
-              <div className="relative bg-white rounded-xl overflow-hidden aspect-[21/9]">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none"></div>
-                <DeviceContent service={service} type="laptop" label="Gaming Monitor 34&quot;" />
-              </div>
-              {/* RGB LED strip bottom */}
-              <div className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 rounded-b-xl animate-pulse-slow"></div>
-            </div>
-            {/* Monitor stand with RGB */}
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-10 bg-gradient-to-b from-gray-900 via-black to-gray-900 rounded-b-lg shadow-xl border-x-2 border-red-600"></div>
-              <div className="w-20 h-2.5 bg-gradient-to-r from-gray-900 via-black to-gray-900 rounded-full shadow-lg border border-red-600"></div>
-            </div>
-          </div>
-        </div>
-        
-        {/* iPad Mini - Bottom Right for companion app */}
-        <div className="absolute z-20 w-[34%] max-w-[115px] bottom-[6%] right-[6%] rotate-[12deg] animate-device-float-delayed" style={{ transformStyle: 'preserve-3d' }}>
-          <div className="relative group">
-            {/* Tablet glow */}
-            <div className="absolute -inset-2 bg-gradient-to-r from-purple-400 to-red-400 opacity-25 blur-lg group-hover:opacity-35 transition-opacity duration-500"></div>
-            <div className="relative bg-gradient-to-br from-purple-900 to-red-900 rounded-2xl p-1 shadow-xl border border-purple-700">
-              {/* Screen */}
-              <div className="relative bg-white rounded-xl overflow-hidden aspect-[3/4]">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none"></div>
-                <DeviceContent service={service} type="tablet" label="Control Panel" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // SEO: iMac 24" + OnePlus with search theme
-  if (service.title === 'Search Engine Optimization') {
-    return (
-      <div className="relative w-full h-full flex items-center justify-center p-4" style={{ perspective: '1100px' }}>
-        {/* Search-themed background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-yellow-50 to-amber-50 opacity-35 animate-gradient-shift"></div>
-        
-        {/* Floating search icon */}
-        <div className="absolute top-5 right-5 animate-bounce-slow opacity-30">
-          <svg className="w-10 h-10 text-orange-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </div>
-        
-        {/* iMac 24" - Left with SEO dashboard */}
-        <div className="absolute z-20 w-[68%] max-w-[275px] left-[4%] top-[10%] animate-device-float" style={{ transformStyle: 'preserve-3d' }}>
-          <div className="relative group">
-            {/* Screen glow */}
-            <div className="absolute -inset-3 bg-gradient-to-r from-orange-400 to-yellow-400 opacity-20 blur-xl group-hover:opacity-30 transition-opacity duration-700"></div>
-            {/* iMac body */}
-            <div className="relative bg-gradient-to-b from-gray-100 to-gray-200 rounded-2xl p-0.5 shadow-2xl">
-              {/* Ultra-thin bezel */}
-              <div className="bg-black rounded-2xl p-[2px]">
-                <div className="relative bg-white rounded-[15px] overflow-hidden aspect-video">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent pointer-events-none"></div>
-                  <DeviceContent service={service} type="laptop" label="SEO Analytics" />
-                </div>
-              </div>
-              {/* Camera */}
-              <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-gray-800 rounded-full"></div>
-            </div>
-            {/* Aluminum stand */}
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-10 bg-gradient-to-b from-gray-200 via-gray-100 to-gray-200 rounded-b-xl shadow-inner"></div>
-              <div className="w-22 h-2 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full shadow-lg"></div>
-            </div>
-          </div>
-        </div>
-        
-        {/* OnePlus 12 - Right with search results */}
-        <div className="absolute z-30 w-[38%] max-w-[130px] right-[8%] bottom-[10%] rotate-[-8deg] animate-device-float-delayed" style={{ transformStyle: 'preserve-3d' }}>
-          <div className="relative group">
-            {/* Phone glow */}
-            <div className="absolute -inset-2 bg-gradient-to-r from-red-400 to-orange-400 opacity-30 blur-lg group-hover:opacity-40 transition-opacity duration-500"></div>
-            <div className="relative bg-gradient-to-br from-red-900 via-red-800 to-orange-900 rounded-[2rem] p-1 shadow-2xl border border-red-700">
-              {/* Punch hole camera */}
-              <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gray-900 rounded-full z-10 border border-gray-800"></div>
-              {/* Screen */}
-              <div className="relative bg-white rounded-[1.8rem] overflow-hidden aspect-[9/20]">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none"></div>
-                <DeviceContent service={service} type="mobile" label="Mobile Search" />
-              </div>
-              {/* Alert slider - OnePlus signature */}
-              <div className="absolute right-0 top-12 w-0.5 h-6 bg-red-500 rounded-l shadow-lg"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Social Media: MacBook Air + iPhone 13 Mini with social theme
-  if (service.title === 'Social Media Marketing') {
-    return (
-      <div className="relative w-full h-full flex items-center justify-center p-4" style={{ perspective: '1000px' }}>
-        {/* Social media themed background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 opacity-35 animate-gradient-shift"></div>
-        
-        {/* Floating social icons */}
-        <div className="absolute top-4 left-4 animate-pulse-slow opacity-20">
-          <div className="flex gap-2">
-            <div className="w-6 h-6 rounded-full bg-blue-400"></div>
-            <div className="w-6 h-6 rounded-full bg-pink-400"></div>
-          </div>
-        </div>
-        
-        {/* MacBook Air - Bottom with social dashboard */}
-        <div className="absolute z-20 w-[72%] max-w-[290px] bottom-[8%] rotate-[3deg] animate-device-float" style={{ transformStyle: 'preserve-3d' }}>
-          <div className="relative group">
-            {/* Screen glow */}
-            <div className="absolute -inset-2 bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 opacity-20 blur-xl group-hover:opacity-30 transition-opacity duration-700"></div>
-            <div className="relative bg-gradient-to-b from-gray-900 to-gray-800 rounded-t-2xl p-1 shadow-2xl border border-gray-700">
-              {/* Screen */}
-              <div className="relative bg-white rounded-t-lg overflow-hidden aspect-video">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent pointer-events-none"></div>
-                <DeviceContent service={service} type="laptop" label="Social Hub" />
-              </div>
-            </div>
-            {/* Keyboard */}
-            <div className="h-2 bg-gradient-to-b from-gray-800 to-gray-700 rounded-b-2xl shadow-xl"></div>
-            <div className="h-0.5 bg-gray-600 w-4/5 mx-auto"></div>
-          </div>
-        </div>
-        
-        {/* iPhone 13 Mini - Top Right with social app */}
-        <div className="absolute z-30 w-[40%] max-w-[135px] top-[6%] right-[10%] rotate-[-10deg] animate-device-float-delayed" style={{ transformStyle: 'preserve-3d' }}>
-          <div className="relative group">
-            {/* Phone glow */}
-            <div className="absolute -inset-2 bg-gradient-to-r from-pink-400 to-purple-400 opacity-30 blur-lg group-hover:opacity-40 transition-opacity duration-500"></div>
-            <div className="relative bg-gradient-to-br from-blue-900 via-purple-900 to-pink-900 rounded-[2rem] p-1 shadow-2xl border border-purple-700">
-              {/* Notch */}
-              <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-16 h-4 bg-black rounded-b-2xl z-10 flex items-center justify-center">
-                <div className="w-1 h-1 bg-gray-800 rounded-full"></div>
-              </div>
-              {/* Screen */}
-              <div className="relative bg-white rounded-[1.8rem] overflow-hidden aspect-[9/19.5]">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none"></div>
-                <DeviceContent service={service} type="mobile" label="Social App" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return null;
 }

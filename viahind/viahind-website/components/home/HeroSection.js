@@ -1,42 +1,54 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import gsap from 'gsap';
 import { FaRocket, FaChartLine, FaUsers, FaArrowRight, FaPlay } from 'react-icons/fa';
+import Link from 'next/link';
 
 export default function HeroSection() {
   const heroRef = useRef(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const rafRef = useRef(null);
+  const mouseRef = useRef({ x: 0, y: 0 });
 
-  // Mouse parallax effect
+  // Throttled mouse parallax effect using rAF instead of setState
   useEffect(() => {
+    let lastX = 0, lastY = 0;
+
     const handleMouseMove = (e) => {
-      const { clientX, clientY } = e;
-      const { innerWidth, innerHeight } = window;
-      const x = (clientX / innerWidth - 0.5) * 2;
-      const y = (clientY / innerHeight - 0.5) * 2;
-      setMousePosition({ x, y });
+      mouseRef.current.x = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseRef.current.y = (e.clientY / window.innerHeight - 0.5) * 2;
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+    const animate = () => {
+      const { x, y } = mouseRef.current;
+      // Only update if position changed significantly
+      if (Math.abs(x - lastX) > 0.01 || Math.abs(y - lastY) > 0.01) {
+        lastX = x;
+        lastY = y;
+        if (heroRef.current) {
+          const floatingElements = heroRef.current.querySelectorAll('.floating-element');
+          floatingElements.forEach((element, index) => {
+            const depth = (index + 1) * 10;
+            gsap.to(element, {
+              x: x * depth,
+              y: y * depth,
+              duration: 0.8,
+              ease: 'power2.out',
+              overwrite: 'auto'
+            });
+          });
+        }
+      }
+      rafRef.current = requestAnimationFrame(animate);
+    };
 
-  // Apply parallax to floating elements
-  useEffect(() => {
-    if (heroRef.current) {
-      const floatingElements = heroRef.current.querySelectorAll('.floating-element');
-      floatingElements.forEach((element, index) => {
-        const depth = (index + 1) * 10;
-        gsap.to(element, {
-          x: mousePosition.x * depth,
-          y: mousePosition.y * depth,
-          duration: 0.5,
-          ease: 'power2.out'
-        });
-      });
-    }
-  }, [mousePosition]);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    rafRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
 
   // Initial animations
   useEffect(() => {
@@ -110,9 +122,9 @@ export default function HeroSection() {
     return () => ctx.revert();
   }, []);
 
-  // 3D tilt effect for cards
-  const handleCardMouseMove = (e, cardRef) => {
-    const card = cardRef;
+  // 3D tilt effect for cards - direct DOM manipulation, no state
+  const handleCardMouseMove = useCallback((e) => {
+    const card = e.currentTarget;
     const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -128,18 +140,20 @@ export default function HeroSection() {
       rotateY: rotateY,
       duration: 0.3,
       ease: 'power2.out',
-      transformPerspective: 1000
+      transformPerspective: 1000,
+      overwrite: 'auto'
     });
-  };
+  }, []);
 
-  const handleCardMouseLeave = (cardRef) => {
-    gsap.to(cardRef, {
+  const handleCardMouseLeave = useCallback((e) => {
+    gsap.to(e.currentTarget, {
       rotateX: 0,
       rotateY: 0,
       duration: 0.5,
-      ease: 'power2.out'
+      ease: 'power2.out',
+      overwrite: 'auto'
     });
-  };
+  }, []);
 
   return (
     <section 
@@ -227,20 +241,20 @@ export default function HeroSection() {
 
             {/* CTA Buttons */}
             <div className="flex flex-wrap gap-4">
-              <button className="hero-cta group bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 inline-flex items-center gap-3">
+              <Link href="/contact" className="hero-cta group bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 inline-flex items-center gap-3">
                 Get Started
                 <FaArrowRight className="group-hover:translate-x-2 transition-transform duration-300" />
-              </button>
+              </Link>
 
-              <button 
+              <Link 
+                href="/about"
                 className="hero-cta group bg-white/80 backdrop-blur-sm text-gray-900 px-8 py-4 rounded-xl font-semibold text-lg shadow-md hover:shadow-xl border border-gray-200 transform hover:-translate-y-1 transition-all duration-300 inline-flex items-center gap-3"
-                onClick={() => setIsVideoPlaying(true)}
               >
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                   <FaPlay className="text-white text-sm ml-0.5" />
                 </div>
                 Watch Demo
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -250,8 +264,8 @@ export default function HeroSection() {
             <div 
               className="floating-card absolute top-0 left-0 w-64 bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-xl border border-white cursor-pointer"
               style={{ transformStyle: 'preserve-3d' }}
-              onMouseMove={(e) => handleCardMouseMove(e, e.currentTarget)}
-              onMouseLeave={(e) => handleCardMouseLeave(e.currentTarget)}
+              onMouseMove={handleCardMouseMove}
+              onMouseLeave={handleCardMouseLeave}
             >
               <div className="relative z-10" style={{ transform: 'translateZ(30px)' }}>
                 <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 shadow-lg">
@@ -266,8 +280,8 @@ export default function HeroSection() {
             <div 
               className="floating-card absolute top-20 right-0 w-72 bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-xl border border-white cursor-pointer"
               style={{ transformStyle: 'preserve-3d' }}
-              onMouseMove={(e) => handleCardMouseMove(e, e.currentTarget)}
-              onMouseLeave={(e) => handleCardMouseLeave(e.currentTarget)}
+              onMouseMove={handleCardMouseMove}
+              onMouseLeave={handleCardMouseLeave}
             >
               <div className="relative z-10" style={{ transform: 'translateZ(30px)' }}>
                 <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center mb-4 shadow-lg">
@@ -282,8 +296,8 @@ export default function HeroSection() {
             <div 
               className="floating-card absolute top-1/2 left-10 w-64 bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-xl border border-white cursor-pointer"
               style={{ transformStyle: 'preserve-3d' }}
-              onMouseMove={(e) => handleCardMouseMove(e, e.currentTarget)}
-              onMouseLeave={(e) => handleCardMouseLeave(e.currentTarget)}
+              onMouseMove={handleCardMouseMove}
+              onMouseLeave={handleCardMouseLeave}
             >
               <div className="relative z-10" style={{ transform: 'translateZ(30px)' }}>
                 <div className="w-14 h-14 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-xl flex items-center justify-center mb-4 shadow-lg">
@@ -298,8 +312,8 @@ export default function HeroSection() {
             <div 
               className="floating-card absolute bottom-10 right-10 w-72 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 shadow-2xl border border-white/20 cursor-pointer text-white"
               style={{ transformStyle: 'preserve-3d' }}
-              onMouseMove={(e) => handleCardMouseMove(e, e.currentTarget)}
-              onMouseLeave={(e) => handleCardMouseLeave(e.currentTarget)}
+              onMouseMove={handleCardMouseMove}
+              onMouseLeave={handleCardMouseLeave}
             >
               <div className="relative z-10" style={{ transform: 'translateZ(30px)' }}>
                 <div className="text-4xl font-bold mb-2">24/7</div>
@@ -328,13 +342,6 @@ export default function HeroSection() {
               </defs>
             </svg>
           </div>
-        </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <div className="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center">
-          <div className="w-1 h-3 bg-gray-400 rounded-full mt-2 animate-pulse"></div>
         </div>
       </div>
     </section>

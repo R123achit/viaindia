@@ -231,20 +231,6 @@ export default function IndustriesSlider() {
               ))}
             </div>
           </div>
-
-          {/* Scroll Indicator Dots */}
-          <div className="flex justify-center gap-2 mt-8">
-            {[...Array(Math.ceil(industries.length / 3))].map((_, index) => (
-              <div
-                key={index}
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  Math.floor(scrollPosition / 400) === index 
-                    ? 'w-8 bg-primary' 
-                    : 'w-2 bg-gray-300'
-                }`}
-              ></div>
-            ))}
-          </div>
         </div>
 
         {/* Bottom CTA */}
@@ -262,12 +248,6 @@ export default function IndustriesSlider() {
         </div>
       </div>
 
-      {/* Custom scrollbar hide styles */}
-      <style jsx>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
     </section>
   );
 }

@@ -43,12 +43,14 @@ export default function Testimonials() {
     }
   ];
 
+  const testimonialsCount = testimonials.length;
+
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+      setCurrentIndex((prev) => (prev + 1) % testimonialsCount);
     }, 5000);
     return () => clearInterval(interval);
-  }, [testimonials.length]);
+  }, [testimonialsCount]);
 
   const nextTestimonial = () => {
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
